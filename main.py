@@ -86,7 +86,15 @@ class game(arcade.Window):
                 self.player_sprite.change_x = -PLAYER_SPEED
             elif key == arcade.key.RIGHT or key == arcade.key.D:
                 self.player_sprite.change_x = PLAYER_SPEED
-                
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key."""
+
+        if key == arcade.key.LEFT or key == arcade.key.A:
+            self.player_sprite.change_x = 0
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player_sprite.change_x = 0
+
 
     def on_draw(self):
         """Render the screen."""
@@ -102,13 +110,3 @@ class game(arcade.Window):
 
         # Activate the GUI camera before drawing GUI elements
         self.gui_camera.use()
-
-        # Draw our score on the screen, scrolling it with the viewport
-        score_text = f"Score: {self.score}"
-        arcade.draw_text(
-            score_text,
-            10,
-            10,
-            arcade.csscolor.WHITE,
-            18,
-        )
