@@ -6,8 +6,8 @@ import arcade
 GRAVITY = 1
 PLAYER_SPEED = 1
 PLAYER_JUMP = 1
-SCREEN_WIDTH = 1
-SCREEN_HEIGHT = 1
+SCREEN_WIDTH = 480
+SCREEN_HEIGHT = 480
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_ITEMS = "Items"
 LAYER_NAME_FOREGROUND = "Foreground"
@@ -44,21 +44,12 @@ class game(arcade.Window):
     def setup(self):
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        map_name = f"/maps/map_level_{self.level}.tmx"
+        #map_name = f"/maps/map_level_{self.level}.tmx"
+        map_name = ":maps/map1.tmx"
 
-        layer_options = {
-                LAYER_NAME_PLATFORMS: {
-                    "use_spatial_hash": True,
-                },
-                LAYER_NAME_ITEMS: {
-                    "use_spatial_hash": True,
-                },
-                LAYER_NAME_LAVA: {
-                    "use_spatial_hash": True,
-                },
-            }
+        layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,}}
         
-        self.scene.add_sprite_list_after("Player", LAYER_NAME_FOREGROUND)
+        #self.scene.add_sprite_list_after("Player", LAYER_NAME_FOREGROUND)
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
         self.camera = arcade.Camera(self.width, self.height)
         self.gui_camera = arcade.Camera(self.width, self.height)
@@ -110,3 +101,14 @@ class game(arcade.Window):
 
         # Activate the GUI camera before drawing GUI elements
         self.gui_camera.use()
+
+
+def main():
+    """Main function"""
+    window = game()
+    window.setup()
+    arcade.run()
+
+
+if __name__ == "__main__":
+    main()
