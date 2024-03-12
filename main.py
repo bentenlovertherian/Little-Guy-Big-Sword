@@ -20,7 +20,7 @@ CHARACTER_SCALING = 1
 
 
 
-class game(arcade.window):
+class game(arcade.Window):
 
     def __init__(self):
 
@@ -86,3 +86,29 @@ class game(arcade.window):
                 self.player_sprite.change_x = -PLAYER_SPEED
             elif key == arcade.key.RIGHT or key == arcade.key.D:
                 self.player_sprite.change_x = PLAYER_SPEED
+                
+
+    def on_draw(self):
+        """Render the screen."""
+
+        # Clear the screen to the background color
+        self.clear()
+
+        # Activate the game camera
+        self.camera.use()
+
+        # Draw our Scene
+        self.scene.draw()
+
+        # Activate the GUI camera before drawing GUI elements
+        self.gui_camera.use()
+
+        # Draw our score on the screen, scrolling it with the viewport
+        score_text = f"Score: {self.score}"
+        arcade.draw_text(
+            score_text,
+            10,
+            10,
+            arcade.csscolor.WHITE,
+            18,
+        )
