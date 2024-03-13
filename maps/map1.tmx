@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="../assets/test_tile.tsx"/>
  <layer id="1" name="Platforms" width="30" height="30">
   <data encoding="base64" compression="zstd">
-   KLUv/WAQDRUBAEAA0gKGAdIC0wmg0PIB0IJdBzUUyJndcTq2kulTYCT+gAE=
+   KLUv/WAQDa0AABAAAQaAUB9V4P6jaDcRQO4MfMF3Ow==
   </data>
  </layer>
 </map>
