@@ -2,7 +2,7 @@
 Platformer Game
 """
 import arcade
-
+import os
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 650
@@ -62,21 +62,14 @@ class MyGame(arcade.Window):
         map_name = "maps/map1.tmx"
 
 
-        layer_options = {
-
-            LAYER_NAME_PLATFORMS: {
-
-                "use_spatial_hash": True,
-
-            },
-        }
+        layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,},}
 
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        image_source = ":resources:images/animated_characters/female_adventurer/femaleAdventurer_idle.png"
+        image_source = "assets/ww.jpg"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
