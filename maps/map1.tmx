@@ -9,12 +9,12 @@
  </layer>
  <layer id="2" name="background" width="64" height="30">
   <data encoding="base64" compression="zlib">
-   eJztmDEOwjAMRTP0gqwgsaeJcoYM3AFGRo5JEbH0+TKlY7H9pa82aoc823HSphQKhUKhkF/1KaXb4nm4La7D1+n93LI68JYRgzriMDvhn1fshb8Sd3XGX4C9wNgDf4n6V+1Bx4Xz8CP3HBNLNSH8jda98CN7NrgmkJ/7YAdmqz2B67/Q2cd6Tzwr61/jz3C1xH/ayG91P9D6/zd+PitYkFb/3P+zEo9mjJ/3Pi/5x/pvK1xWeFm4/7fp87tH7ssYXyD3leLxr73y9Y8H//8gv4wrnYWywijvr9XQniVzl/nfKdeduLLCX/6cH/2AfOaN/FhDodCe9QSxCXKr
+   eJztmDEOwjAMRTP0gqwgsaeOcoYM3AFGRo5JK2LpY5nCgEqx/SSLtix9tuNETSkIgiAI/NKGlC5TjD3qFKXHeXj8b5kGvtRzUHoeRif+40J48S/CuzjzJ3AnuPfgT9H/anhgP3nu3tRe5sRST7B/Feue/dE9G1wT6C/nYANnqzNB9j+Js4/1mXhU1r/mn+HXkv/hQ/+19oO19x1t/r/yl2cFC2j9L+d/VvJRjfnLvc9L/bH/64IXPydD7jO4/9fh2Y+vqdf+BLUvIge/mJXfYP7Gg99/0J/vizgLZcWR/Zd6aMvwu/P7X0Wtm/DKij/9uT/GDeqZP/THHgqCLXMHd/By7g==
   </data>
  </layer>
  <layer id="1" name="Platforms" width="64" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt2DEKgCAYBWCR/4K1VlMX6QQ11tQBpOtE10mIIAwVrdD0ffA2h/+pizIGAAA5q8geAACA1JSkT2FILial65hRd4Bc1HQE9HzfRufepra/XWJ9XKF/6Am+0cteg5La8jfS0D2pM51/7HdjfmG+P/dfPOe73nv016+Lvf/GGRMyLT2L4G6JxcrDJBY7fgtGVg==
+   eJzt100KgCAUBGCRd8HaZqsu0glqWasOIF0nuk5CBGGoZYSm88HsXLzxZyFjAACQs4rcAQAASE1J5hSW5GLUug4ZdQfIhaA9YOb7Nzr2NrX9bRPr8xT6h57gG53q1WsR2nvX339N1/zZnbO1rYn9bkyO+VLvP3vOd7736G9eF3v/lTMmVRp6F8mfJRYLD5NYbAImRqA=
   </data>
  </layer>
 </map>
