@@ -4,18 +4,18 @@ Platformer Game
 import arcade
 import os
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+SCREEN_WIDTH = 960
+SCREEN_HEIGHT = 960
 SCREEN_TITLE = "Platformer"
 
 
-CHARACTER_SCALING = 1
-TILE_SCALING = 0.5
+CHARACTER_SCALING = 2
+TILE_SCALING = 2
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
-PLAYER_MOVEMENT_SPEED = 10
+PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 1
-PLAYER_JUMP_SPEED = 20
+PLAYER_JUMP_SPEED = 15
 PLAYER_START_X = 64
 
 PLAYER_START_Y = 225
@@ -69,7 +69,7 @@ class MyGame(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        image_source = "assets/ww.jpg"
+        image_source = "assets/user_player.png"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y

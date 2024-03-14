@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
- <tileset firstgid="1" source="../assets/test_tile.tsx"/>
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+ <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
+ <tileset firstgid="1105" source="../assets/Castle Assets/castle_tileset.tsx"/>
+ <layer id="3" name="second background" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUUBNksZAmPgpGwVAEoPRMyzSNz2x0OWq5g9Z+GrV31N5Re0ftHa5guIYBLH7JxUMFAACZZxLp
+  </data>
+ </layer>
+ <layer id="2" name="background" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztlj0OwjAMhTP0gqwgsaeOcoYO3AFGRo5JUWPp6cmUAjYseZJVRW39+S9RUurq6vLSNKR0mW1sVmcrzc7D8j6Kqxxp7NL4YzB3XLFobiFe+RFXgCmwjuTKH+tsWaT2s//di1w5Fo8aKLdSX5WLzOxYe+TyfE3A8u4511nozIiataPRX4ub4enBPWzkes+3Nc/PuLzXv5FVZ57nbMRRnbi8h6LzxTrXFX9R/a1wdnBu0tYnyLVQHO/O4ONOgfcN5Oq60BmSDd/6/VrNLOk/+t+VcpvIXza48iEX7Qbx541crFnXojuPgXKr
+  </data>
+ </layer>
  <layer id="1" name="Platforms" width="30" height="30">
   <data encoding="base64" compression="zlib">
-   eJztyiEOAAAIAzH4/6exCHAE1SZnlkUAAPApW9s2fQCuFTZUAAo=
+   eJxjYBgFo2D4gWgWwngUjIJRgB8EseDGgXgwrcEMNDumj+bnIQliWCB4MAJy6wyYn6jlr4YBCp/hYm8f0Lx+NBxDoE0Qy4KJaQXw+ReX3DwquIcce9eQaS9y+A4le68zMTCsAuJkFsrwKibS8NUBwgBi4UZW
   </data>
  </layer>
 </map>
