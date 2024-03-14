@@ -21,6 +21,14 @@ PLAYER_START_Y = 100
 
 LAYER_NAME_PLATFORMS = "Platforms"
 
+RIGHT_FACING = 0
+LEFT_FACING = 1
+
+def load_texture_pair(filename):
+    return [
+        arcade.load_texture(filename),
+        arcade.load_texture(filename, flipped_horizontally=True),
+    ]
 
 
 
@@ -47,6 +55,28 @@ class MyGame(arcade.Window):
 
         self.end_of_map = 0
 
+        self.character_face_direction = RIGHT_FACING
+        self.left_pressed = False
+        self.right_pressed = False
+
+        # Used for flipping between image sequences
+        self.cur_texture = 0
+        self.scale = CHARACTER_SCALING
+
+        # Load textures for walking
+        self.walk_textures = []
+        for i in range(1):
+            print(i)
+            texture = load_texture_pair("assets/little_guy_big_sword"+f"_{i}.png")
+            self.walk_textures.append(texture)  
+
+    def update_animation(self, delta_time: float = 1 / 60):
+
+        # Figure out if we need to flip face left or right
+        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+            self.character_face_direction = LEFT_FACING
+        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
+            self.character_face_direction = RIGHT_FACING
 
     def setup(self):
 
@@ -67,7 +97,7 @@ class MyGame(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        image_source = "assets/little_guy_big-sword.png"
+        image_source = "assets/little_guy_big-sword_0.png"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
