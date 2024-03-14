@@ -4,18 +4,18 @@ Platformer Game
 import arcade
 import os
 
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 960
-SCREEN_TITLE = "Platformer"
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 680
+SCREEN_TITLE = "Little Guy Big Sword"
 
 
 CHARACTER_SCALING = 2
-TILE_SCALING = 2
+TILE_SCALING = 1.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 1
-PLAYER_JUMP_SPEED = 15
+PLAYER_JUMP_SPEED = 12
 PLAYER_START_X = 64
 
 PLAYER_START_Y = 225
@@ -32,7 +32,6 @@ class MyGame(arcade.Window):
 
     def __init__(self):
 
-        # Calls the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         self.tile_map = None
@@ -69,7 +68,7 @@ class MyGame(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        image_source = "assets/user_player.png"
+        image_source = "assets/little_guy_big-sword.png"
         self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
