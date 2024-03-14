@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="64" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="1">
  <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
  <tileset firstgid="1105" source="../assets/Castle Assets/castle_tileset.tsx"/>
- <layer id="3" name="second background" width="64" height="30">
+ <layer id="3" name="second background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt1TEOgCAUREEKT+v9D2AoaIyaYPMDO5PYYMMDwdYAINt5zI0DsLd+/yf8A74a7+92W4+UPX6jX7/+6lnU0a9ff/Us6qT388w3kWGc/78Pa7oADgES6Q==
+   eJzt07EJACAMBdEUTuv+A4iIjaBg+GAi98BGmyMYMwCIq5a7ewD/6fseaedPLevbq+5oM9uhU4tOLTq16NTK0pkdM/aZ/9N7MDTCiRLp
   </data>
  </layer>
- <layer id="2" name="background" width="64" height="30">
+ <layer id="2" name="background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJztmDEOwjAMRTP0gqwgsaeOcoYM3AFGRo5JK2LpY5nCgEqx/SSLtix9tuNETSkIgiAI/NKGlC5TjD3qFKXHeXj8b5kGvtRzUHoeRif+40J48S/CuzjzJ3AnuPfgT9H/anhgP3nu3tRe5sRST7B/Feue/dE9G1wT6C/nYANnqzNB9j+Js4/1mXhU1r/mn+HXkv/hQ/+19oO19x1t/r/yl2cFC2j9L+d/VvJRjfnLvc9L/bH/64IXPydD7jO4/9fh2Y+vqdf+BLUvIge/mJXfYP7Gg99/0J/vizgLZcWR/Zd6aMvwu/P7X0Wtm/DKij/9uT/GDeqZP/THHgqCLXMHd/By7g==
+   eJztljsOwjAQRF3kgrQg0Ttr+QwuuAOUlByTRHilYbQJKSBeJI80SpwU+7Q/OYSurq4unypDCLfJY3WenKqvw+u/BxXgksqaKu/ojHNcsTfORHzJKacAo8DZE6f8Ud0te9Jx4jl8yCWzt8ixcmbqS+VExtiwF5CT56kAW+ue5boL7Xgvs3U2+tPijPBswXnayLnX/C/FseZ9iZN37Z6y6s7zHg3u3IiTd5K3fGLd80p8/S4NGGfh/szDO4e+S83lBXKZiPXXMzff2fE+j5x6TrTzo8GinGs1+YY0hsa5U+4KxY8Gp+zEiX5AfuJGTqxJl089Ab+kcu4=
   </data>
  </layer>
- <layer id="1" name="Platforms" width="64" height="30">
+ <layer id="1" name="Platforms" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt100KgCAUBGCRd8HaZqsu0glqWasOIF0nuk5CBGGoZYSm88HsXLzxZyFjAACQs4rcAQAASE1J5hSW5GLUug4ZdQfIhaA9YOb7Nzr2NrX9bRPr8xT6h57gG53q1WsR2nvX339N1/zZnbO1rYn9bkyO+VLvP3vOd7736G9eF3v/lTMmVRp6F8mfJRYLD5NYbAImRqA=
+   eJxjYBgFo2AUjDQQzUIYj4JRMApGAT1BEAtuHIgHDzYwA81N0wehG0fB8AcxLBA8HAC5bRRYGAxUODQMkfAfdSdxoA9ofz8ajkFLj+jpM5YFE9MDEBNW+NRQK6znETBnsLhzDZnmIMf3qDsR4DoTA8MqIE5moQyvgpoznQETw+SQcToDafgq08BgbP7BhwGjtVIf
   </data>
  </layer>
 </map>

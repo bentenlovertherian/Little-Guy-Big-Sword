@@ -4,7 +4,7 @@ Platformer Game
 import arcade
 import os
 
-SCREEN_WIDTH = 1024
+SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 680
 SCREEN_TITLE = "Little Guy Big Sword"
 
