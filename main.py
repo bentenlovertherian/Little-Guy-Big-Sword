@@ -1,6 +1,4 @@
-"""
-Platformer Game
-"""
+
 import arcade
 import os
 
@@ -24,11 +22,23 @@ LAYER_NAME_PLATFORMS = "Platforms"
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
-def load_texture_pair(filename):
-    return [
-        arcade.load_texture(filename),
-        arcade.load_texture(filename, flipped_horizontally=True),
-    ]
+class player_sprite(arcade.Sprite):
+
+    def __init__(self):
+
+        super().__init__()
+
+        self.character_face_direction = RIGHT_FACING
+        self.scale = CHARACTER_SCALING
+
+
+    def update_animation(self, delta_time: float = 1 / 60):
+        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+            self.character_face_direction = LEFT_FACING
+        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
+            self.character_face_direction = RIGHT_FACING
+            
+            
 
 
 
@@ -40,6 +50,9 @@ class MyGame(arcade.Window):
     def __init__(self):
 
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+
+        FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(FILE_PATH)
 
         self.tile_map = None
 
@@ -59,24 +72,7 @@ class MyGame(arcade.Window):
         self.left_pressed = False
         self.right_pressed = False
 
-        # Used for flipping between image sequences
-        self.cur_texture = 0
-        self.scale = CHARACTER_SCALING
 
-        # Load textures for walking
-        self.walk_textures = []
-        for i in range(1):
-            print(i)
-            texture = load_texture_pair("assets/little_guy_big_sword"+f"_{i}.png")
-            self.walk_textures.append(texture)  
-
-    def update_animation(self, delta_time: float = 1 / 60):
-
-        # Figure out if we need to flip face left or right
-        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
-            self.character_face_direction = LEFT_FACING
-        elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
-            self.character_face_direction = RIGHT_FACING
 
     def setup(self):
 
@@ -88,6 +84,7 @@ class MyGame(arcade.Window):
 
         #map_name = f":resources:tiled_maps/map2_level_{self.level}.json"
         map_name = "maps/map1.tmx"
+
 
 
         layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,},}
