@@ -12,8 +12,8 @@ TILE_SCALING = 1.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 PLAYER_MOVEMENT_SPEED = 3
-GRAVITY = 0.5
-PLAYER_JUMP_SPEED = 10
+GRAVITY = 0.3
+PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 
@@ -21,6 +21,14 @@ LAYER_NAME_PLATFORMS = "Platforms"
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
+
+def load_texture_pair(filename):
+
+    return [
+        arcade.load_texture(filename),
+        arcade.load_texture(filename, flipped_horizontally=True),
+    ]
+        
 
 class player_sprite(arcade.Sprite):
 
@@ -31,12 +39,21 @@ class player_sprite(arcade.Sprite):
         self.character_face_direction = RIGHT_FACING
         self.scale = CHARACTER_SCALING
 
+        self.idle_texture = "assets/little_guy_big-sword_0.png"
+        self.idle_texture_pair = load_texture_pair(self.idle_texture)
+
+        self.hitbox_texture = self.idle_texture_pair[0]
+        self.hit_box = self.hitbox_texture.hit_box_points
 
     def update_animation(self, delta_time: float = 1 / 60):
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+            return 
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+            return 
             
             
 
@@ -73,7 +90,6 @@ class MyGame(arcade.Window):
         self.right_pressed = False
 
 
-
     def setup(self):
 
 
@@ -94,8 +110,9 @@ class MyGame(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        image_source = "assets/little_guy_big-sword_0.png"
-        self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
+        #image_source = "assets/little_guy_big-sword_0.png"
+        #self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
+        self.player_sprite = player_sprite()
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
