@@ -78,12 +78,7 @@ class player_sprite(arcade.Sprite):
             self.character_face_direction = RIGHT_FACING
 
 
-        if self.change_y < 0:
-            #for i in range(2):
-                #self.texture = self.fall_textures[i][self.character_face_direction]
-                #return
-            self.texture = self.fall_textures
-            
+       
         if self.change_x == 0:
             self.texture = self.idle_texture_pair[self.character_face_direction]
             return
@@ -93,6 +88,13 @@ class player_sprite(arcade.Sprite):
             if self.cur_texture > 9:
                 self.cur_texture = 0
             self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+
+        if self.change_y < 0:
+            i = 0
+            for i in range(2): 
+                self.texture = self.fall_textures[i][self.character_face_direction]
+                
+
 
 
 class MyGame(arcade.Window):
