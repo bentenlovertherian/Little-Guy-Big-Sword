@@ -42,21 +42,32 @@ class player_sprite(arcade.Sprite):
         self.idle_texture = "assets/little_guy_big-sword_0.png"
         self.idle_texture_pair = load_texture_pair(self.idle_texture)
 
-        self.hitbox_texture = self.idle_texture_pair[0]
-        self.hit_box = self.hitbox_texture.hit_box_points
+        self.texture = self.idle_texture_pair[0]
+        self.hit_box = self.texture.hit_box_points
+
+
+        self.walk_textures = []
+        for i in range(2):
+            print(i)
+            texture = load_texture_pair(f"assets/little_guy_big-sword_{i}.png")
+            self.walk_textures.append(texture)
+        
+
 
     def update_animation(self, delta_time: float = 1 / 60):
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-            return 
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-            return 
-            
-            
 
+        if self.change_x == 0:
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+            return
+        
+        self.cur_texture += 1
+        if self.cur_texture > 1:
+            self.cur_texture = 0
+        self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
 
 class MyGame(arcade.Window):
@@ -175,13 +186,6 @@ class MyGame(arcade.Window):
     def update(self, delta_time):
 
         self.physics_engine.update()
-
-
-        if self.player_sprite.center_y < -100:
-
-            self.player_sprite.center_x = PLAYER_START_X
-
-            self.player_sprite.center_y = PLAYER_START_Y
 
 def main():
     """Main function"""
