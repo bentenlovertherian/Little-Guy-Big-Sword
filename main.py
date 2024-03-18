@@ -17,6 +17,7 @@ PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 
+
 LAYER_NAME_PLATFORMS = "Platforms"
 
 RIGHT_FACING = 0
@@ -50,7 +51,11 @@ class player_sprite(arcade.Sprite):
         path = "./assets/little_guy_big-sword"
 
         
-        self.fall_textures = load_texture_pair(f"{path}_slash.png")
+        self.fall_textures = []
+        texture = load_texture_pair(f"{path}_slash_0.png")
+        self.fall_textures.append(texture)
+        texture = load_texture_pair(f"{path}_slash_1.png")
+        self.fall_textures.append(texture)
         
         self.walk_textures = []
         for i in range(2):
@@ -64,7 +69,6 @@ class player_sprite(arcade.Sprite):
             self.walk_textures.append(texture)
             texture = load_texture_pair(f"{path}_{i}.png")
             self.walk_textures.append(texture)
-            print(len(self.walk_textures))
         
 
     def update_animation(self, delta_time: float = 1 / 60):
@@ -75,9 +79,11 @@ class player_sprite(arcade.Sprite):
 
 
         if self.change_y < 0:
-            self.texture = self.fall_textures[self.character_face_direction]
-            return
-
+            #for i in range(2):
+                #self.texture = self.fall_textures[i][self.character_face_direction]
+                #return
+            self.texture = self.fall_textures
+            
         if self.change_x == 0:
             self.texture = self.idle_texture_pair[self.character_face_direction]
             return
