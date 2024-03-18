@@ -45,14 +45,27 @@ class player_sprite(arcade.Sprite):
         self.texture = self.idle_texture_pair[0]
         self.hit_box = self.texture.hit_box_points
 
+        self.cur_texture = 0
 
+        path = "./assets/little_guy_big-sword"
+
+        
+        self.fall_textures = load_texture_pair(f"{path}_slash.png")
+        
         self.walk_textures = []
         for i in range(2):
-            print(i)
-            texture = load_texture_pair(f"assets/little_guy_big-sword_{i}.png")
+            texture = load_texture_pair(f"{path}_{i}.png")
             self.walk_textures.append(texture)
+            texture = load_texture_pair(f"{path}_{i}.png")
+            self.walk_textures.append(texture)
+            texture = load_texture_pair(f"{path}_{i}.png")
+            self.walk_textures.append(texture)
+            texture = load_texture_pair(f"{path}_{i}.png")
+            self.walk_textures.append(texture)
+            texture = load_texture_pair(f"{path}_{i}.png")
+            self.walk_textures.append(texture)
+            print(len(self.walk_textures))
         
-
 
     def update_animation(self, delta_time: float = 1 / 60):
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
@@ -60,14 +73,20 @@ class player_sprite(arcade.Sprite):
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
 
+
+        if self.change_y < 0:
+            self.texture = self.fall_textures[self.character_face_direction]
+            return
+
         if self.change_x == 0:
             self.texture = self.idle_texture_pair[self.character_face_direction]
             return
         
-        self.cur_texture += 1
-        if self.cur_texture > 1:
-            self.cur_texture = 0
-        self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+        if self.change_x > 0 or self.change_x < 0:
+            self.cur_texture += 1
+            if self.cur_texture > 9:
+                self.cur_texture = 0
+            self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
 
 class MyGame(arcade.Window):
@@ -183,9 +202,10 @@ class MyGame(arcade.Window):
 
         self.camera.move_to(player_centered)
 
-    def update(self, delta_time):
+    def on_update(self, delta_time):
 
         self.physics_engine.update()
+        self.player_sprite.update_animation()
 
 def main():
     """Main function"""
