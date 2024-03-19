@@ -3,9 +3,10 @@ import arcade
 import os
 
 SCREEN_WIDTH = 1009
-SCREEN_HEIGHT = 680
+SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Little Guy Big Sword"
 
+#feature notes: have key unlock door to spawn point
 
 CHARACTER_SCALING = 2
 TILE_SCALING = 1.5
