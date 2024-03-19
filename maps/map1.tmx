@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="1">
  <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
  <tileset firstgid="1105" source="../assets/Castle Assets/castle_tileset.tsx"/>
- <imagelayer id="7" name="Image Layer 1" locked="1" offsetx="-168.5" offsety="-120">
-  <image source="../assets/Jungle Assets/parallax background/plx-5.png" width="1009" height="720"/>
+ <imagelayer id="13" name="Image Layer 5" tintcolor="#6ec464" offsetx="0" offsety="400">
+  <image source="../assets/Jungle Assets/parallax background/plx-1.png" width="672" height="480"/>
+ </imagelayer>
+ <imagelayer id="12" name="Image Layer 4" tintcolor="#22d43e" offsetx="0" offsety="400">
+  <image source="../assets/Jungle Assets/parallax background/plx-2.png" width="672" height="480"/>
+ </imagelayer>
+ <imagelayer id="11" name="Image Layer 3" tintcolor="#22d43e" offsetx="0" offsety="400">
+  <image source="../assets/Jungle Assets/parallax background/plx-3.png" width="672" height="480"/>
+ </imagelayer>
+ <imagelayer id="9" name="Image Layer 2" opacity="0.6" tintcolor="#22d43e" offsetx="0" offsety="400">
+  <image source="../assets/Jungle Assets/parallax background/plx-4.png" width="672" height="480"/>
+ </imagelayer>
+ <imagelayer id="8" name="Image Layer 1" opacity="1" tintcolor="#6ec464" offsetx="0" offsety="400">
+  <image source="../assets/Jungle Assets/parallax background/plx-5.png" width="672" height="480"/>
  </imagelayer>
  <layer id="3" name="second background" width="42" height="30">
   <data encoding="base64" compression="zlib">
