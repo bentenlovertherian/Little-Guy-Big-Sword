@@ -48,26 +48,27 @@ class player_sprite(arcade.Sprite):
 
         self.cur_texture = 0
 
-        path = "./assets/little_guy_big-sword"
+        self.path = "./assets/little_guy_big-sword"
 
         
         self.fall_textures = []
-        texture = load_texture_pair(f"{path}_slash_0.png")
+        texture = load_texture_pair(f"{self.path}_slash_1.png")
         self.fall_textures.append(texture)
-        texture = load_texture_pair(f"{path}_slash_1.png")
+        texture = load_texture_pair(f"{self.path}_slash_2.png")
         self.fall_textures.append(texture)
+
         
         self.walk_textures = []
         for i in range(2):
-            texture = load_texture_pair(f"{path}_{i}.png")
+            texture = load_texture_pair(f"{self.path}_{i}.png")
             self.walk_textures.append(texture)
-            texture = load_texture_pair(f"{path}_{i}.png")
+            texture = load_texture_pair(f"{self.path}_{i}.png")
             self.walk_textures.append(texture)
-            texture = load_texture_pair(f"{path}_{i}.png")
+            texture = load_texture_pair(f"{self.path}_{i}.png")
             self.walk_textures.append(texture)
-            texture = load_texture_pair(f"{path}_{i}.png")
+            texture = load_texture_pair(f"{self.path}_{i}.png")
             self.walk_textures.append(texture)
-            texture = load_texture_pair(f"{path}_{i}.png")
+            texture = load_texture_pair(f"{self.path}_{i}.png")
             self.walk_textures.append(texture)
         
 
@@ -78,11 +79,11 @@ class player_sprite(arcade.Sprite):
             self.character_face_direction = RIGHT_FACING
 
         if self.change_y < 0 and self.change_y > -1:
-            self.texture = self.fall_textures[1][self.character_face_direction]
+            self.texture = self.fall_textures[0][self.character_face_direction]
             return
         
         if self.change_y < 0:
-            self.texture = self.fall_textures[0][self.character_face_direction]
+            self.texture = self.fall_textures[1][self.character_face_direction]
             return
     
         if self.change_x == 0:
