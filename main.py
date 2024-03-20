@@ -1,6 +1,7 @@
 
 import arcade
 import os
+import random
 
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -17,7 +18,7 @@ GRAVITY = 0.3
 PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
-
+ENEMY_MOVEMENT_SPEED = 2
 
 LAYER_NAME_PLATFORMS = "Platforms"
 
@@ -30,7 +31,50 @@ def load_texture_pair(filename):
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
-        
+'''
+class enemy(arcade.Sprite):
+
+    def __init__(self, filename):
+        super().__init__()
+
+        self.filename = filename
+        print(filename)
+        self.idle_texture_pair = load_texture_pair(filename)
+
+
+        self.texture = self.idle_texture_pair[0]
+        self.hit_box = self.texture.hit_box_points
+
+    def update_enemy_movement(self, delta_time: float = 1 / 60):
+
+        self.direction = random.randint(1, 3)
+        if self.direction == 1:
+            self.change_x = -ENEMY_MOVEMENT_SPEED
+            return self.change_x
+        elif self.direction == 2:
+            self.change_x = ENEMY_MOVEMENT_SPEED
+            return self.change_x
+'''
+class goblin(arcade.Sprite):
+
+    def __init__(self):
+        super().__init__()
+
+        filename = "./assets/test_enemy.png"    
+        self.idle_texture_pair = load_texture_pair(filename)
+        self.texture = self.idle_texture_pair[0]
+        self.hit_box = self.texture.hit_box_points
+
+    
+    def update_enemy_movement(self, delta_time: float = 1 / 60):
+
+        self.direction =  random.randint(0, 1)
+        print(self.direction)
+        if self.direction == 0:
+            self.change_x = -ENEMY_MOVEMENT_SPEED
+        elif self.direction == 1:
+            self.change_x = ENEMY_MOVEMENT_SPEED
+ 
 
 class player_sprite(arcade.Sprite):
 
@@ -74,6 +118,7 @@ class player_sprite(arcade.Sprite):
         
 
     def update_animation(self, delta_time: float = 1 / 60):
+
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
@@ -115,6 +160,8 @@ class MyGame(arcade.Window):
 
         self.player_sprite = None
 
+        self.enemy_sprite = None
+
         self.physics_engine = None
 
         self.camera = None
@@ -148,20 +195,16 @@ class MyGame(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
 
-        #image_source = "assets/little_guy_big-sword_0.png"
-        #self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
         self.player_sprite = player_sprite()
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
 
+        self.enemy_sprite = goblin()
+        self.enemy_sprite.center_x = 950
+        self.enemy_sprite.center_y = PLAYER_START_Y
+        self.scene.add_sprite("Enemy", self.enemy_sprite)
 
-        self.end_of_map = self.tile_map.width * GRID_PIXEL_SIZE
-
-    
-        if self.tile_map.background_color:
-
-            arcade.set_background_color(self.tile_map.background_color)
 
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -176,7 +219,7 @@ class MyGame(arcade.Window):
 
         self.camera.use()
 
-        self.scene.draw()
+        self.scene.draw(pixelated = True)
 
         self.gui_camera.use()
 
@@ -214,6 +257,7 @@ class MyGame(arcade.Window):
 
         self.physics_engine.update()
         self.player_sprite.update_animation()
+        self.enemy_sprite.update_enemy_movement()
 
 def main():
     """Main function"""
