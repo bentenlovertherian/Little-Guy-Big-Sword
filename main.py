@@ -67,13 +67,15 @@ class goblin(arcade.Sprite):
 
     
     def update_enemy_movement(self, delta_time: float = 1 / 60):
-
-        self.direction =  random.randint(0, 1)
+            
+        self.direction =  random.randint(0, 2)
         print(self.direction)
         if self.direction == 0:
-            self.change_x = -ENEMY_MOVEMENT_SPEED
+            self.center_x -= ENEMY_MOVEMENT_SPEED
         elif self.direction == 1:
-            self.change_x = ENEMY_MOVEMENT_SPEED
+            self.center_x += ENEMY_MOVEMENT_SPEED
+        elif self.direction == 2:
+            self.center_y += 5
  
 
 class player_sprite(arcade.Sprite):
@@ -208,7 +210,7 @@ class MyGame(arcade.Window):
 
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player_sprite,
+            self.player_sprite, self.enemy_sprite, 
             gravity_constant=GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
