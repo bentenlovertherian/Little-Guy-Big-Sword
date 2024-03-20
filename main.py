@@ -21,6 +21,7 @@ PLAYER_START_Y = 100
 ENEMY_MOVEMENT_SPEED = 2
 
 LAYER_NAME_PLATFORMS = "Platforms"
+LAYER_NAME_ENEMIES = "Enemies"
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
@@ -31,30 +32,7 @@ def load_texture_pair(filename):
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
-'''
-class enemy(arcade.Sprite):
 
-    def __init__(self, filename):
-        super().__init__()
-
-        self.filename = filename
-        print(filename)
-        self.idle_texture_pair = load_texture_pair(filename)
-
-
-        self.texture = self.idle_texture_pair[0]
-        self.hit_box = self.texture.hit_box_points
-
-    def update_enemy_movement(self, delta_time: float = 1 / 60):
-
-        self.direction = random.randint(1, 3)
-        if self.direction == 1:
-            self.change_x = -ENEMY_MOVEMENT_SPEED
-            return self.change_x
-        elif self.direction == 2:
-            self.change_x = ENEMY_MOVEMENT_SPEED
-            return self.change_x
-'''
 class goblin(arcade.Sprite):
 
     def __init__(self):
@@ -69,13 +47,15 @@ class goblin(arcade.Sprite):
     def update_enemy_movement(self, delta_time: float = 1 / 60):
             
         self.direction =  random.randint(0, 2)
-        print(self.direction)
+        movement_range = random.randint(0, 10)
         if self.direction == 0:
-            self.center_x -= ENEMY_MOVEMENT_SPEED
+            i = 0
+            for i in range(movement_range):
+                self.center_x -= ENEMY_MOVEMENT_SPEED
         elif self.direction == 1:
-            self.center_x += ENEMY_MOVEMENT_SPEED
-        elif self.direction == 2:
-            self.center_y += 5
+            i = 0
+            for i in range(movement_range):
+                self.center_x += ENEMY_MOVEMENT_SPEED
  
 
 class player_sprite(arcade.Sprite):
@@ -205,14 +185,24 @@ class MyGame(arcade.Window):
         self.enemy_sprite = goblin()
         self.enemy_sprite.center_x = 950
         self.enemy_sprite.center_y = PLAYER_START_Y
-        self.scene.add_sprite("Enemy", self.enemy_sprite)
+        self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
 
-
+        self.enemy_sprite_2 = goblin()
+        self.enemy_sprite_2.center_x = 550
+        self.enemy_sprite_2.center_y = PLAYER_START_Y + 50
+        self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite_2)  
+    
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player_sprite, self.enemy_sprite, 
+            self.player_sprite, 
             gravity_constant=GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS],
+        )
+
+        self.physics_engine_2 = arcade.PhysicsEnginePlatformer(
+            self.enemy_sprite,
+            gravity_constant= GRAVITY,
+            walls=self.scene[LAYER_NAME_PLATFORMS]
         )
 
     def on_draw(self):
@@ -258,8 +248,10 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
 
         self.physics_engine.update()
+        self.physics_engine_2.update()
         self.player_sprite.update_animation()
         self.enemy_sprite.update_enemy_movement()
+        self.enemy_sprite_2.update_enemy_movement()
 
 def main():
     """Main function"""
