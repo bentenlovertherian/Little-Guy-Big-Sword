@@ -2,6 +2,7 @@
 import arcade
 import os
 import random
+import time
 
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -18,7 +19,7 @@ GRAVITY = 0.3
 PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
-ENEMY_MOVEMENT_SPEED = 2
+ENEMY_MOVEMENT_SPEED = 0.1
 
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_ENEMIES = "Enemies"
@@ -44,19 +45,23 @@ class goblin(arcade.Sprite):
         self.hit_box = self.texture.hit_box_points
 
     
-    def update_enemy_movement(self, delta_time: float = 1 / 60):
-            
+    def update_enemy_movement(self):
+
+        
         self.direction =  random.randint(0, 2)
-        movement_range = random.randint(0, 10)
+        movement_range = random.randint(0, 2)
         if self.direction == 0:
             i = 0
             for i in range(movement_range):
-                self.center_x -= ENEMY_MOVEMENT_SPEED
+                self.change_x -= ENEMY_MOVEMENT_SPEED
         elif self.direction == 1:
             i = 0
             for i in range(movement_range):
-                self.center_x += ENEMY_MOVEMENT_SPEED
- 
+                self.change_x += ENEMY_MOVEMENT_SPEED
+        elif self.direction == 2:
+            if self.change_y == 0:
+                self.change_y = 5
+        
 
 class player_sprite(arcade.Sprite):
 
@@ -199,11 +204,20 @@ class MyGame(arcade.Window):
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
 
+    
         self.physics_engine_2 = arcade.PhysicsEnginePlatformer(
             self.enemy_sprite,
             gravity_constant= GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS]
         )
+
+        self.physics_engine_3 = arcade.PhysicsEnginePlatformer(
+            self.enemy_sprite_2,
+            gravity_constant= GRAVITY,
+            walls=self.scene[LAYER_NAME_PLATFORMS]
+        )
+
+        
 
     def on_draw(self):
 
@@ -249,6 +263,7 @@ class MyGame(arcade.Window):
 
         self.physics_engine.update()
         self.physics_engine_2.update()
+        self.physics_engine_3.update()
         self.player_sprite.update_animation()
         self.enemy_sprite.update_enemy_movement()
         self.enemy_sprite_2.update_enemy_movement()
