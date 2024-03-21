@@ -19,7 +19,7 @@ GRAVITY = 0.3
 PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
-ENEMY_MOVEMENT_SPEED = 0.1
+ENEMY_MOVEMENT_SPEED = 0.01
 
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_ENEMIES = "Enemies"
@@ -47,17 +47,12 @@ class goblin(arcade.Sprite):
     
     def update_enemy_movement(self):
 
-        
         self.direction =  random.randint(0, 2)
         movement_range = random.randint(0, 2)
         if self.direction == 0:
-            i = 0
-            for i in range(movement_range):
-                self.change_x -= ENEMY_MOVEMENT_SPEED
+            self.change_x -= ENEMY_MOVEMENT_SPEED
         elif self.direction == 1:
-            i = 0
-            for i in range(movement_range):
-                self.change_x += ENEMY_MOVEMENT_SPEED
+            self.change_x += ENEMY_MOVEMENT_SPEED
         elif self.direction == 2:
             if self.change_y == 0:
                 self.change_y = 5
