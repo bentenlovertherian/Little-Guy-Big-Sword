@@ -11,6 +11,7 @@ SCREEN_TITLE = "Little Guy Big Sword"
 #feature notes: have key unlock door to spawn point
 
 CHARACTER_SCALING = 2
+ENEMY_SCALING = 1.5
 TILE_SCALING = 1.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
@@ -19,7 +20,7 @@ GRAVITY = 0.3
 PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
-ENEMY_MOVEMENT_SPEED = 1
+ENEMY_MOVEMENT_SPEED = 2
 
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_ENEMIES = "Enemies"
@@ -39,29 +40,45 @@ class goblin(arcade.Sprite):
     def __init__(self):
         super().__init__()
 
-        filename = "./assets/test_enemy.png"    
+        filename = "./assets/creatures/goblin.png"    
         self.idle_texture_pair = load_texture_pair(filename)
         self.texture = self.idle_texture_pair[0]
         self.hit_box = self.texture.hit_box_points
+        self.scale = ENEMY_SCALING
+
 
     
     def update_enemy_movement(self):
+        
+        i = random.randint(0, 30)
+        print(i)
+        if i == 1:
+            print(i)
+            self.direction =  random.randint(0, 50)
 
-        self.direction =  random.randint(0, 50)
-        if self.direction % 2 == 0:
-            self.change_x -= ENEMY_MOVEMENT_SPEED
+            if self.direction % 2 == 0:
+                self.change_x -= ENEMY_MOVEMENT_SPEED
+            
+            elif self.direction % 2 != 0:
+                self.change_x += ENEMY_MOVEMENT_SPEED
+            
+            elif self.direction == 1:
+                if self.change_y == 0:
+                    self.change_y = 5
 
-        elif self.direction % 2 != 0:
-            self.change_x += ENEMY_MOVEMENT_SPEED
+        '''while self.change_x == 0:
 
-        elif self.direction == 1:
-            if self.change_y == 0:
-                self.change_y = 5
+            self.change_x = ENEMY_MOVEMENT_SPEED
+            self.change_y = 5
+            print("beans")
 
-        elif self.change_x == 0:
-            self.change_x = ENEMY_MOVEMENT_SPEED * 10
             if self.change_x == 0:
-                self.change_x -= ENEMY_MOVEMENT_SPEED * 10
+
+                self.change_x -= ENEMY_MOVEMENT_SPEED
+                self.change_y = 5
+                print("beans")'''
+
+
         
 
 class player_sprite(arcade.Sprite):
@@ -188,15 +205,19 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
 
+        self.enemy_sprite_list = []
+
         self.enemy_sprite = goblin()
         self.enemy_sprite.center_x = 950
         self.enemy_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
+        self.enemy_sprite_list.append(self.enemy_sprite)
 
         self.enemy_sprite_2 = goblin()
         self.enemy_sprite_2.center_x = 550
         self.enemy_sprite_2.center_y = PLAYER_START_Y + 50
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite_2)  
+        self.enemy_sprite_list.append(self.enemy_sprite_2)
     
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -266,8 +287,12 @@ class MyGame(arcade.Window):
         self.physics_engine_2.update()
         self.physics_engine_3.update()
         self.player_sprite.update_animation()
-        self.enemy_sprite.update_enemy_movement()
-        self.enemy_sprite_2.update_enemy_movement()
+
+        for i in self.enemy_sprite_list:
+            i.update_enemy_movement()
+
+        player_collision_list = arcade.check_for_collision_with_lists(
+            self.player_sprite,[self.scene[LAYER_NAME_ENEMIES],],)
 
 def main():
     """Main function"""
