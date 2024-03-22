@@ -11,7 +11,7 @@ SCREEN_TITLE = "Little Guy Big Sword"
 #feature notes: have key unlock door to spawn point
 
 CHARACTER_SCALING = 2
-ENEMY_SCALING = 1.5
+ENEMY_SCALING = 1.2
 TILE_SCALING = 1.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
@@ -35,50 +35,56 @@ def load_texture_pair(filename):
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
 
-class goblin(arcade.Sprite):
+class skeleton(arcade.Sprite):
 
     def __init__(self):
         super().__init__()
 
-        filename = "./assets/creatures/goblin.png"    
-        self.idle_texture_pair = load_texture_pair(filename)
+        filename = "./assets/creatures/Skeleton/tile0"    
+        self.idle_texture_pair = load_texture_pair(f"{filename}01.png")
+
+        self.attack_textures = []
+        for i in range(5):
+            texture = load_texture_pair(f"{filename}0{i}.png")
+            self.attack_textures.append(texture)
+
+        print(len(self.attack_textures))
+
         self.texture = self.idle_texture_pair[0]
         self.hit_box = self.texture.hit_box_points
+
         self.scale = ENEMY_SCALING
+        self.sprite_face_direction = RIGHT_FACING
+        self.cur_texture = 0
 
-
+        self.attack = ""
     
     def update_enemy_movement(self):
         
-        i = random.randint(0, 30)
-        print(i)
+        i = random.randint(1, 20)
         if i == 1:
-            print(i)
-            self.direction =  random.randint(0, 50)
-
-            if self.direction % 2 == 0:
-                self.change_x -= ENEMY_MOVEMENT_SPEED
-            
-            elif self.direction % 2 != 0:
-                self.change_x += ENEMY_MOVEMENT_SPEED
-            
-            elif self.direction == 1:
+            self.direction =  random.randint(0, 2)
+            if self.direction == 0:
                 if self.change_y == 0:
-                    self.change_y = 5
+                    self.change_y += 5
+            elif self.direction == 1:
+                self.change_x = ENEMY_MOVEMENT_SPEED
+            elif self.direction == 2:
+                self.change_x = -ENEMY_MOVEMENT_SPEED
 
-        '''while self.change_x == 0:
+    def update_animation(self, delta_time: float = 1 / 60, attack):
 
-            self.change_x = ENEMY_MOVEMENT_SPEED
-            self.change_y = 5
-            print("beans")
+        if self.change_x < 0 and self.sprite_face_direction == RIGHT_FACING:
+            self.sprite_face_direction = LEFT_FACING
+        elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
+            self.sprite_face_direction = RIGHT_FACING
 
-            if self.change_x == 0:
-
-                self.change_x -= ENEMY_MOVEMENT_SPEED
-                self.change_y = 5
-                print("beans")'''
-
-
+        if self.attack == "attack":
+            self.cur_texture += 1
+            if self.cur_texture > 4:
+                self.cur_texture = 0
+            self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
+        
         
 
 class player_sprite(arcade.Sprite):
@@ -199,7 +205,7 @@ class MyGame(arcade.Window):
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
-
+     
         self.player_sprite = player_sprite()
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
@@ -207,13 +213,13 @@ class MyGame(arcade.Window):
 
         self.enemy_sprite_list = []
 
-        self.enemy_sprite = goblin()
+        self.enemy_sprite = skeleton()
         self.enemy_sprite.center_x = 950
-        self.enemy_sprite.center_y = PLAYER_START_Y
+        self.enemy_sprite.center_y = PLAYER_START_Y 
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
         self.enemy_sprite_list.append(self.enemy_sprite)
 
-        self.enemy_sprite_2 = goblin()
+        self.enemy_sprite_2 = skeleton()
         self.enemy_sprite_2.center_x = 550
         self.enemy_sprite_2.center_y = PLAYER_START_Y + 50
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite_2)  
@@ -261,6 +267,11 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+        elif key == arcade.key.SPACE:
+            self.enemy_sprite.update_animation("attack")
+            self.enemy_sprite_2.update_animation("attack")
+            
+
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -286,13 +297,16 @@ class MyGame(arcade.Window):
         self.physics_engine.update()
         self.physics_engine_2.update()
         self.physics_engine_3.update()
+
         self.player_sprite.update_animation()
+        self.enemy_sprite.update_animation()
+        self.enemy_sprite_2.update_animation()
 
         for i in self.enemy_sprite_list:
             i.update_enemy_movement()
 
-        player_collision_list = arcade.check_for_collision_with_lists(
-            self.player_sprite,[self.scene[LAYER_NAME_ENEMIES],],)
+        #player_collision_list = arcade.check_for_collision_with_lists(
+            #self.player_sprite,[self.scene[LAYER_NAME_ENEMIES],],)
 
 def main():
     """Main function"""
