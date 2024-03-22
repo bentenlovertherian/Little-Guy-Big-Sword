@@ -37,7 +37,7 @@ def load_texture_pair(filename):
 
 class skeleton(arcade.Sprite):
 
-    def __init__(self, attack):
+    def __init__(self):
         super().__init__()
 
         filename = "./assets/creatures/Skeleton/tile0"    
@@ -61,7 +61,6 @@ class skeleton(arcade.Sprite):
         self.sprite_face_direction = RIGHT_FACING
 
         self.cur_texture = 0
-
         self.attack = ""
     
     def update_enemy_movement(self):
@@ -77,7 +76,7 @@ class skeleton(arcade.Sprite):
             elif self.direction == 2:
                 self.change_x = -ENEMY_MOVEMENT_SPEED
 
-    def update_animation(self, delta_time: float = 1 / 60, attack):
+    def update_enemy_animation(self, delta_time: float = 1 / 60):
 
         if self.change_x < 0 and self.sprite_face_direction == RIGHT_FACING:
             self.sprite_face_direction = LEFT_FACING
@@ -266,19 +265,15 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
-            self.enemy_sprite.update_animation("attack")
-            self.enemy_sprite_2.update_animation("attack")
-            
-
+            self.enemy_sprite.attack = "attack"
+            self.enemy_sprite_2.attack = "attack"
+    
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.A:
             self.player_sprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = 0
-        
-        elif key == arcade.key.SPACE:
-            self.enemy_sprite.__init__("")
 
 
     def center_camera_to_player(self):
