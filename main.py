@@ -113,7 +113,6 @@ class player_sprite(arcade.Sprite):
 
         self.path = "./assets/little_guy_big-sword"
 
-        
         self.fall_textures = []
         texture = load_texture_pair(f"{self.path}_slash_1.png")
         self.fall_textures.append(texture)
@@ -296,11 +295,10 @@ class MyGame(arcade.Window):
         self.physics_engine_3.update()
 
         self.player_sprite.update_animation()
-        self.enemy_sprite.update_enemy_animation()
-        self.enemy_sprite_2.update_enemy_animation()
-
+        
         for i in self.enemy_sprite_list:
             i.update_enemy_movement()
+            i.update_enemy_animation()
 
         #player_collision_list = arcade.check_for_collision_with_lists(
             #self.player_sprite,[self.scene[LAYER_NAME_ENEMIES],],)
