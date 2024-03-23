@@ -1,3 +1,8 @@
 import arcade
 import time
-print(delta_time: float 1 / 60)
+
+
+start = time.time()
+print("hello")
+end = time.time()
+print(end - start)
