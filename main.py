@@ -2,7 +2,6 @@
 import arcade
 import os
 import random
-import time
 
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -35,7 +34,7 @@ def load_texture_pair(filename):
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
 
-class skeleton(arcade.Sprite):
+class Skeleton(arcade.Sprite):
 
     def __init__(self):
         super().__init__()
@@ -131,7 +130,7 @@ class skeleton(arcade.Sprite):
 
 
 
-class player_sprite(arcade.Sprite):
+class PlayerSprite(arcade.Sprite):
 
     def __init__(self):
 
@@ -261,7 +260,7 @@ class MyGame(arcade.Window):
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
-        self.playersprite = player_sprite()
+        self.playersprite = PlayerSprite()
         self.playersprite.center_x = PLAYER_START_X
         self.playersprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.playersprite)
@@ -269,13 +268,13 @@ class MyGame(arcade.Window):
         self.enemy_sprite_list = []
 
         # Calls skeleton function to add a new sprite and adds them to sprite list.
-        self.enemy_sprite = skeleton()
+        self.enemy_sprite = Skeleton()
         self.enemy_sprite.center_x = 950
         self.enemy_sprite.center_y = PLAYER_START_Y 
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
         self.enemy_sprite_list.append(self.enemy_sprite)
 
-        self.enemy_sprite_2 = skeleton()
+        self.enemy_sprite_2 = Skeleton()
         self.enemy_sprite_2.center_x = 250
         self.enemy_sprite_2.center_y = PLAYER_START_Y + 300
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite_2)  

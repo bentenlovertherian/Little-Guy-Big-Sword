@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="1">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="1">
  <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
  <tileset firstgid="1105" source="../assets/Castle Assets/castle_tileset.tsx"/>
  <imagelayer id="13" name="Image Layer 5" tintcolor="#6ec464" offsetx="0" offsety="400">
@@ -24,7 +24,7 @@
  </layer>
  <layer id="2" name="background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJztl18OgjAMxnnYCb0FDHcFuYFPyoPvxGOKCQ21dF3jBlTDl3zRLSH+1vUPVtWhf9HJzT506NfVuKXD6HZyP7ozkOvABlx+4gQ3xjglc5xbs2Oe1vFra5yefPcGOX3kzq1wgmKMkq7u02uyBSGObw+ja4Z9y3jS2gkkLy+EpUfMW3NydR7jxM9oOEudJTj+7qHXW+GE37y5eX0n7Dg3YUbVO3GC8LwEzkGo/1RP6ArlsVTnMU6cFxpOzV4OJzXtTZoeuxYn7km4f8ZivWc8U30fzx+6p1EOJ60f+j7Czf/UeWJxzuXk+jxewyyoyad0JyVFOXFPeqB9PLPOkzlG2gs01sRYev6pvOPglmeV3hO/5SxxJzm28P+rhF5G+6kd
+   eJztl00OgjAQhVn0hN4Cij0DN3ClLtwTjikknTAO0+mQlloNL3nBNiF+nc6PNs2pf9HFrD516tfVma3d7N77OXuoINeBDbis5wR3lXFK5jhLs2Oe3vDr2jgt+Wwr5LSBO6+FExRilHQznz6SzQlxXDzObhn2kvGkteNIXnIG5tKcXJ1LnFLOUuU6i0NxpJyxfCjJCd95N+v6QdhxbsKMar/ECcLzEjhHof5jPWHIlMfSvYY4ubyQODV7KZyhOt/TY4/i5HoSF09aY6U5NX0fzx+6p1EKJ60f+nuE66mx84TinMop9fllDbOgJU/pTnKKcuKe9EL7eGZdvTlGzYyg1sRYen9S3rEz27NqZu9ezhx3kuIa/n/l0Bu8Ua1r
   </data>
  </layer>
  <layer id="1" name="Platforms" width="42" height="30">
