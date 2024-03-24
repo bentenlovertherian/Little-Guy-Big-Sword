@@ -75,16 +75,20 @@ class skeleton(arcade.Sprite):
         
         i = random.randint(1, 20)
         if i == 1:
-            self.direction =  random.randint(0, 5)
+            self.direction =  random.randint(0, 12)
             if self.direction == 0:
                 if self.change_y == 0:
-                    self.change_y += 5
-            elif self.direction == 1:
+                    self.change_y += 7
+            elif self.direction >= 1 and self.direction <=4:
                 self.change_x = ENEMY_MOVEMENT_SPEED
-            elif self.direction == 2:
+            elif self.direction >= 5 and self.direction <= 8:
                 self.change_x = -ENEMY_MOVEMENT_SPEED
-            elif self.direction >= 3:
+            elif self.direction >= 9:
                 self.change_x = 0
+
+        elif self.attack == "attack":
+            self.change_x = 0
+            self.change_y = 0
 
     def update_enemy_animation(self, delta_time: float = 1 / 60):
             
@@ -93,24 +97,26 @@ class skeleton(arcade.Sprite):
         elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
             self.sprite_face_direction = RIGHT_FACING
         
-        if self.change_x > 0 or self.change_x < 0 and self.attack != "attack":
 
-            if self.timer > 5:
-                self.cur_texture +=1 
-                if self.cur_texture > 3:
-                    self.cur_texture = 0
-                self.texture = self.walk_textures[self.cur_texture][self.sprite_face_direction]
-                self.timer = 0
-            else:
-                self.timer += 1
+        if self.attack != "attack":
 
-        if self.change_x == 0 and self.attack != "attack":
-            i = random.randint(0, 10)
-            if i == 1:
-                self.cur_texture +=1 
-                if self.cur_texture > 3:
-                    self.cur_texture = 0
-                self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
+            if self.change_x > 0 or self.change_x < 0:
+                if self.timer > 5:
+                    self.cur_texture +=1 
+                    if self.cur_texture > 3:
+                        self.cur_texture = 0
+                    self.texture = self.walk_textures[self.cur_texture][self.sprite_face_direction]
+                    self.timer = 0
+                else:
+                    self.timer += 1
+
+            if self.change_x == 0:
+                i = random.randint(0, 10)
+                if i == 1:
+                    self.cur_texture +=1 
+                    if self.cur_texture > 3:
+                        self.cur_texture = 0
+                    self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
 
         if self.attack == "attack":
             if self.timer > 10:
@@ -155,6 +161,7 @@ class player_sprite(arcade.Sprite):
         self.attack_textures.append(texture)
         texture = load_texture_pair(f"{self.path}_attack_0.png")
         self.attack_textures.append(texture)
+        print(len(self.attack_textures))
         
         self.walk_textures = []
         for i in range(2):
@@ -165,7 +172,7 @@ class player_sprite(arcade.Sprite):
                 x +=1
 
         self.attack = ""
-        self.timer = 0
+        self.timer = 5
 
     def update_animation(self, delta_time: float = 1 / 60):
 
@@ -193,10 +200,9 @@ class player_sprite(arcade.Sprite):
             self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
         if self.attack == "attack":
-            print("beans")
             if self.timer > 5:
                 self.cur_texture += 1
-                if self.cur_texture > 2:
+                if self.cur_texture > 1: 
                     self.attack = ""
                     self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
@@ -221,7 +227,7 @@ class MyGame(arcade.Window):
 
         self.scene = None
 
-        self.player_sprite = None
+        self.playersprite = None
 
         self.enemy_sprite = None
 
@@ -255,10 +261,10 @@ class MyGame(arcade.Window):
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
-        self.player_sprite = player_sprite()
-        self.player_sprite.center_x = PLAYER_START_X
-        self.player_sprite.center_y = PLAYER_START_Y
-        self.scene.add_sprite("Player", self.player_sprite)
+        self.playersprite = player_sprite()
+        self.playersprite.center_x = PLAYER_START_X
+        self.playersprite.center_y = PLAYER_START_Y
+        self.scene.add_sprite("Player", self.playersprite)
 
         self.enemy_sprite_list = []
 
@@ -277,7 +283,7 @@ class MyGame(arcade.Window):
     
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player_sprite, 
+            self.playersprite, 
             gravity_constant=GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
@@ -311,28 +317,28 @@ class MyGame(arcade.Window):
 
         if key == arcade.key.UP or key == arcade.key.W:
             if self.physics_engine.can_jump():
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                self.playersprite.change_y = PLAYER_JUMP_SPEED
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+            self.playersprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+            self.playersprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
             self.enemy_sprite.attack = "attack"
             self.enemy_sprite_2.attack = "attack"
-            self.player_sprite.attack = "attack"
+            self.playersprite.attack = "attack"
     
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = 0
+            self.playersprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = 0
+            self.playersprite.change_x = 0
 
 
     def center_camera_to_player(self):
-        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player_sprite.center_y - (
+        screen_center_x = self.playersprite.center_x - (self.camera.viewport_width / 2)
+        screen_center_y = self.playersprite.center_y - (
             self.camera.viewport_height / 2
         )
         if screen_center_x < 0:
@@ -349,7 +355,7 @@ class MyGame(arcade.Window):
         self.physics_engine_2.update()
         self.physics_engine_3.update()
 
-        self.player_sprite.update_animation()
+        self.playersprite.update_animation()
         
         for i in self.enemy_sprite_list:
             i.update_enemy_movement()
