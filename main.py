@@ -40,7 +40,6 @@ class skeleton(arcade.Sprite):
     def __init__(self):
         super().__init__()
 
-
         filename = "./assets/creatures/Skeleton"
 
         self.idle_texture_pair = load_texture_pair(f"{filename}/idle/tile000.png")
@@ -69,12 +68,14 @@ class skeleton(arcade.Sprite):
 
         self.cur_texture = 0
         self.attack = ""
+
+        self.timer = 0
     
     def update_enemy_movement(self):
         
         i = random.randint(1, 20)
         if i == 1:
-            self.direction =  random.randint(0, 2)
+            self.direction =  random.randint(0, 5)
             if self.direction == 0:
                 if self.change_y == 0:
                     self.change_y += 5
@@ -82,6 +83,8 @@ class skeleton(arcade.Sprite):
                 self.change_x = ENEMY_MOVEMENT_SPEED
             elif self.direction == 2:
                 self.change_x = -ENEMY_MOVEMENT_SPEED
+            elif self.direction >= 3:
+                self.change_x = 0
 
     def update_enemy_animation(self, delta_time: float = 1 / 60):
             
@@ -90,15 +93,18 @@ class skeleton(arcade.Sprite):
         elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
             self.sprite_face_direction = RIGHT_FACING
         
-        if self.change_x > 0 or self.change_x < 0:
-            i = random.randint(0, 10)
-            if i == 1:
+        if self.change_x > 0 or self.change_x < 0 and self.attack != "attack":
+
+            if self.timer > 5:
                 self.cur_texture +=1 
                 if self.cur_texture > 3:
                     self.cur_texture = 0
                 self.texture = self.walk_textures[self.cur_texture][self.sprite_face_direction]
+                self.timer = 0
+            else:
+                self.timer += 1
 
-        if self.change_x == 0:
+        if self.change_x == 0 and self.attack != "attack":
             i = random.randint(0, 10)
             if i == 1:
                 self.cur_texture +=1 
@@ -107,15 +113,15 @@ class skeleton(arcade.Sprite):
                 self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
 
         if self.attack == "attack":
-            i = random.randint(0, 10)
-            if i == 1:
+            if self.timer > 10:
                 self.cur_texture += 1
                 if self.cur_texture > 7:
-                    self.cur_texture = 0
-                    self.attack = ""          
+                    self.attack = ""
+                    self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
-            
-
+                self.timer = 0
+            else:
+                self.timer += 1
 
 
 
@@ -144,6 +150,11 @@ class player_sprite(arcade.Sprite):
         texture = load_texture_pair(f"{self.path}_slash_2.png")
         self.fall_textures.append(texture)
 
+        self.attack_textures = []
+        texture = load_texture_pair(f"{self.path}_0.png")
+        self.attack_textures.append(texture)
+        texture = load_texture_pair(f"{self.path}_attack_0.png")
+        self.attack_textures.append(texture)
         
         self.walk_textures = []
         for i in range(2):
@@ -152,6 +163,9 @@ class player_sprite(arcade.Sprite):
                 texture = load_texture_pair(f"{self.path}_{i}.png")
                 self.walk_textures.append(texture)
                 x +=1
+
+        self.attack = ""
+        self.timer = 0
 
     def update_animation(self, delta_time: float = 1 / 60):
 
@@ -177,6 +191,19 @@ class player_sprite(arcade.Sprite):
             if self.cur_texture > 9:
                 self.cur_texture = 0
             self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+
+        if self.attack == "attack":
+            print("beans")
+            if self.timer > 5:
+                self.cur_texture += 1
+                if self.cur_texture > 2:
+                    self.attack = ""
+                    self.cur_texture = 0        
+                self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
+                self.timer = 0
+            else:
+                self.timer += 1
+
                 
 class MyGame(arcade.Window):
     """
@@ -234,6 +261,8 @@ class MyGame(arcade.Window):
         self.scene.add_sprite("Player", self.player_sprite)
 
         self.enemy_sprite_list = []
+
+        # Calls skeleton function to add a new sprite and adds them to sprite list.
         self.enemy_sprite = skeleton()
         self.enemy_sprite.center_x = 950
         self.enemy_sprite.center_y = PLAYER_START_Y 
@@ -291,6 +320,7 @@ class MyGame(arcade.Window):
         elif key == arcade.key.SPACE:
             self.enemy_sprite.attack = "attack"
             self.enemy_sprite_2.attack = "attack"
+            self.player_sprite.attack = "attack"
     
     def on_key_release(self, key, modifiers):
 
