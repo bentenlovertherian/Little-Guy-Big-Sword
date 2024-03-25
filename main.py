@@ -226,9 +226,11 @@ class MyGame(arcade.Window):
 
         self.scene = None
 
-        self.playersprite = None
+        self.player_sprite = None
 
         self.enemy_sprite = None
+
+        self.enemy_sprite_2 = None
 
         self.physics_engine = None
 
@@ -260,10 +262,10 @@ class MyGame(arcade.Window):
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
-        self.playersprite = PlayerSprite()
-        self.playersprite.center_x = PLAYER_START_X
-        self.playersprite.center_y = PLAYER_START_Y
-        self.scene.add_sprite("Player", self.playersprite)
+        self.player_sprite = PlayerSprite()
+        self.player_sprite.center_x = PLAYER_START_X
+        self.player_sprite.center_y = PLAYER_START_Y
+        self.scene.add_sprite("Player", self.player_sprite)
 
         self.enemy_sprite_list = []
 
@@ -271,18 +273,18 @@ class MyGame(arcade.Window):
         self.enemy_sprite = Skeleton()
         self.enemy_sprite.center_x = 950
         self.enemy_sprite.center_y = PLAYER_START_Y 
-        self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
+        self.scene.add_sprite("enemy_1", self.enemy_sprite)
         self.enemy_sprite_list.append(self.enemy_sprite)
 
         self.enemy_sprite_2 = Skeleton()
         self.enemy_sprite_2.center_x = 250
         self.enemy_sprite_2.center_y = PLAYER_START_Y + 300
-        self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite_2)  
+        self.scene.add_sprite("enemy_2", self.enemy_sprite_2)  
         self.enemy_sprite_list.append(self.enemy_sprite_2)
     
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.playersprite, 
+            self.player_sprite, 
             gravity_constant=GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
@@ -316,28 +318,28 @@ class MyGame(arcade.Window):
 
         if key == arcade.key.UP or key == arcade.key.W:
             if self.physics_engine.can_jump():
-                self.playersprite.change_y = PLAYER_JUMP_SPEED
+                self.player_sprite.change_y = PLAYER_JUMP_SPEED
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.playersprite.change_x = -PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.playersprite.change_x = PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
             self.enemy_sprite.attack = "attack"
             self.enemy_sprite_2.attack = "attack"
-            self.playersprite.attack = "attack"
+            self.player_sprite.attack = "attack"
     
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.playersprite.change_x = 0
+            self.player_sprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.playersprite.change_x = 0
+            self.player_sprite.change_x = 0
 
 
     def center_camera_to_player(self):
-        screen_center_x = self.playersprite.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.playersprite.center_y - (
+        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
+        screen_center_y = self.player_sprite.center_y - (
             self.camera.viewport_height / 2
         )
         if screen_center_x < 0:
@@ -354,14 +356,22 @@ class MyGame(arcade.Window):
         self.physics_engine_2.update()
         self.physics_engine_3.update()
 
-        self.playersprite.update_animation()
+        self.player_sprite.update_animation()
         
         for i in self.enemy_sprite_list:
             i.update_enemy_movement()
             i.update_enemy_animation()
 
-        #player_collision_list = arcade.check_for_collision_with_lists(
-            #self.player_sprite,[self.scene[LAYER_NAME_ENEMIES],],)
+        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], ["enemy_2"]])
+
+        for collision in collision_list:
+            
+            for i in range(1,3):
+                enemy = f"enemy_{i}"
+                if self.scene[enemy] in collision.sprite_lists:
+                    self.enemy_sprite.attack = "attack"
+                    self.enemy_sprite_2.attack = "attack"
+                    return
 
 def main():
     """Main function"""
