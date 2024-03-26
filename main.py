@@ -362,6 +362,7 @@ class MyGame(arcade.Window):
             i.update_enemy_movement()
             i.update_enemy_animation()
 
+<<<<<<< HEAD
         collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], self.scene["enemy_2"]])
 
         for collision in collision_list:
@@ -372,6 +373,19 @@ class MyGame(arcade.Window):
             elif self.scene["enemy_2"] in collision.sprite_lists:
                 self.enemy_sprite_2.attack = "attack"
                 return
+=======
+        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"]],[self.scene["enemy_2"]])
+
+        for collision in collision_list:
+            
+            for i in self.enemy_sprite_list:
+                for x in range (1, 3):
+                    print(x)
+                    enemy = f"enemy_{x}"
+                    if self.scene[enemy] in collision.sprite_lists:
+                        i.attack = "attack"
+                        return
+>>>>>>> 5786e5464feb4e1197b4bf5e237e9a9703ae1cb4
 
 def main():
     """Main function"""
