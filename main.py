@@ -271,7 +271,7 @@ class MyGame(arcade.Window):
         # Calls skeleton function to add a new sprite and adds them to sprite list.
         self.enemy_sprite = skeleton()
         self.enemy_sprite.center_x = 950
-        self.enemy_sprite.center_y = PLAYER_START_Y 
+        self.enemy_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite(LAYER_NAME_ENEMIES, self.enemy_sprite)
         self.enemy_sprite_list.append(self.enemy_sprite)
 
