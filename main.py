@@ -160,7 +160,6 @@ class PlayerSprite(arcade.Sprite):
         self.attack_textures.append(texture)
         texture = load_texture_pair(f"{self.path}_attack_0.png")
         self.attack_textures.append(texture)
-        print(len(self.attack_textures))
         
         self.walk_textures = []
         for i in range(2):
@@ -228,7 +227,7 @@ class MyGame(arcade.Window):
 
         self.player_sprite = None
 
-        self.enemy_sprite = None
+        self.enemy_sprite_1 = None
 
         self.enemy_sprite_2 = None
 
@@ -270,11 +269,12 @@ class MyGame(arcade.Window):
         self.enemy_sprite_list = []
 
         # Calls skeleton function to add a new sprite and adds them to sprite list.
-        self.enemy_sprite = Skeleton()
-        self.enemy_sprite.center_x = 950
-        self.enemy_sprite.center_y = PLAYER_START_Y 
-        self.scene.add_sprite("enemy_1", self.enemy_sprite)
-        self.enemy_sprite_list.append(self.enemy_sprite)
+        
+        self.enemy_sprite_1 = Skeleton()
+        self.enemy_sprite_1.center_x = 950
+        self.enemy_sprite_1.center_y = PLAYER_START_Y
+        self.scene.add_sprite("enemy_1", self.enemy_sprite_1)
+        self.enemy_sprite_list.append(self.enemy_sprite_1)
 
         self.enemy_sprite_2 = Skeleton()
         self.enemy_sprite_2.center_x = 250
@@ -291,7 +291,7 @@ class MyGame(arcade.Window):
 
     
         self.physics_engine_2 = arcade.PhysicsEnginePlatformer(
-            self.enemy_sprite,
+            self.enemy_sprite_1,
             gravity_constant= GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS]
         )
@@ -325,7 +325,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
-            self.enemy_sprite.attack = "attack"
+            self.enemy_sprite_1.attack = "attack"
             self.enemy_sprite_2.attack = "attack"
             self.player_sprite.attack = "attack"
     
@@ -362,16 +362,16 @@ class MyGame(arcade.Window):
             i.update_enemy_movement()
             i.update_enemy_animation()
 
-        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], ["enemy_2"]])
+        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], self.scene["enemy_2"]])
 
         for collision in collision_list:
             
-            for i in range(1,3):
-                enemy = f"enemy_{i}"
-                if self.scene[enemy] in collision.sprite_lists:
-                    self.enemy_sprite.attack = "attack"
-                    self.enemy_sprite_2.attack = "attack"
-                    return
+            if self.scene["enemy_1"] in collision.sprite_lists:
+                self.enemy_sprite_1.attack = "attack"
+                return
+            elif self.scene["enemy_2"] in collision.sprite_lists:
+                self.enemy_sprite_2.attack = "attack"
+                return
 
 def main():
     """Main function"""
