@@ -67,8 +67,8 @@ class Skeleton(arcade.Sprite):
 
         self.cur_texture = 0
         self.state = ""
-
         self.timer = 0
+        self.attacking = False
     
     def update_enemy_movement(self):
         
@@ -98,7 +98,7 @@ class Skeleton(arcade.Sprite):
         
 
         if self.state != "attack":
-
+            self.attacking = False
             if self.change_x > 0 or self.change_x < 0:
                 if self.timer > 5:
                     self.cur_texture +=1 
@@ -121,14 +121,13 @@ class Skeleton(arcade.Sprite):
             if self.timer > 10:
                 self.cur_texture += 1
                 if self.cur_texture > 7:
-                    MyGame.on_update(None, None, True)
+                    self.attacking = True
                     self.state = ""
                     self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                 self.timer = 0
             else:
                 self.timer += 1
-
 
 
 class PlayerSprite(arcade.Sprite):
@@ -210,13 +209,6 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
             else:
                 self.timer += 1
-
-    def CheckIfHit(self):
-
-        if self.if_hit == True:
-            print("bleans")
-            self.health -= 1
-            print(self.health)
 
             
 
@@ -360,7 +352,7 @@ class MyGame(arcade.Window):
 
         self.camera.move_to(player_centered)
 
-    def on_update(self, delta_time, attack_frame):
+    def on_update(self, delta_time: float = 1 / 60):
 
         self.physics_engine.update()
         self.physics_engine_2.update()
@@ -378,8 +370,9 @@ class MyGame(arcade.Window):
             
             if self.scene["enemy_1"] in collision.sprite_lists:
                 #self.enemy_sprite_1.state = "attack"
-                self.player_sprite.if_hit = True
-                self.player_sprite.CheckIfHit()
+                if collision.attacking == True:
+                    self.player_sprite.health -= 1
+                    print("bleans")
                 return
             elif self.scene["enemy_2"] in collision.sprite_lists:
                 self.enemy_sprite_2.state = "attack"
