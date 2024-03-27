@@ -66,7 +66,7 @@ class Skeleton(arcade.Sprite):
         self.sprite_face_direction = RIGHT_FACING
 
         self.cur_texture = 0
-        self.attack = ""
+        self.state = ""
 
         self.timer = 0
     
@@ -85,7 +85,7 @@ class Skeleton(arcade.Sprite):
             elif self.direction >= 9:
                 self.change_x = 0
 
-        elif self.attack == "attack":
+        elif self.state == "attack":
             self.change_x = 0
             self.change_y = 0
 
@@ -97,7 +97,7 @@ class Skeleton(arcade.Sprite):
             self.sprite_face_direction = RIGHT_FACING
         
 
-        if self.attack != "attack":
+        if self.state != "attack":
 
             if self.change_x > 0 or self.change_x < 0:
                 if self.timer > 5:
@@ -117,11 +117,12 @@ class Skeleton(arcade.Sprite):
                         self.cur_texture = 0
                     self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
 
-        if self.attack == "attack":
+        if self.state == "attack":
             if self.timer > 10:
+                PlayerSprite.CheckIfHit(0, 0)
                 self.cur_texture += 1
                 if self.cur_texture > 7:
-                    self.attack = ""
+                    self.state = ""
                     self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                 self.timer = 0
@@ -171,6 +172,8 @@ class PlayerSprite(arcade.Sprite):
 
         self.attack = ""
         self.timer = 5
+        self.health = 1
+        self.if_collide = 0
 
     def update_animation(self, delta_time: float = 1 / 60):
 
@@ -207,6 +210,18 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
             else:
                 self.timer += 1
+
+    def CheckIfHit(self, if_collide):
+
+        if if_collide == "yes":
+            print("bleans")
+            self.health -= 1
+            return
+
+
+
+
+
 
                 
 class MyGame(arcade.Window):
@@ -303,7 +318,6 @@ class MyGame(arcade.Window):
         )
 
         
-
     def on_draw(self):
 
         self.clear()
@@ -325,8 +339,8 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
-            self.enemy_sprite_1.attack = "attack"
-            self.enemy_sprite_2.attack = "attack"
+            self.enemy_sprite_1.state = "attack"
+            self.enemy_sprite_2.state = "attack"
             self.player_sprite.attack = "attack"
     
     def on_key_release(self, key, modifiers):
@@ -362,30 +376,17 @@ class MyGame(arcade.Window):
             i.update_enemy_movement()
             i.update_enemy_animation()
 
-<<<<<<< HEAD
         collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], self.scene["enemy_2"]])
 
         for collision in collision_list:
             
             if self.scene["enemy_1"] in collision.sprite_lists:
-                self.enemy_sprite_1.attack = "attack"
+                self.enemy_sprite_1.state = "attack"
+                self.player_sprite.CheckIfHit("yes")
                 return
             elif self.scene["enemy_2"] in collision.sprite_lists:
-                self.enemy_sprite_2.attack = "attack"
+                self.enemy_sprite_2.state = "attack"
                 return
-=======
-        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"]],[self.scene["enemy_2"]])
-
-        for collision in collision_list:
-            
-            for i in self.enemy_sprite_list:
-                for x in range (1, 3):
-                    print(x)
-                    enemy = f"enemy_{x}"
-                    if self.scene[enemy] in collision.sprite_lists:
-                        i.attack = "attack"
-                        return
->>>>>>> 5786e5464feb4e1197b4bf5e237e9a9703ae1cb4
 
 def main():
     """Main function"""
