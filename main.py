@@ -119,9 +119,9 @@ class Skeleton(arcade.Sprite):
 
         if self.state == "attack":
             if self.timer > 10:
-                PlayerSprite.CheckIfHit(0, 0)
                 self.cur_texture += 1
                 if self.cur_texture > 7:
+                    MyGame.on_update(None, None, True)
                     self.state = ""
                     self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
@@ -173,7 +173,7 @@ class PlayerSprite(arcade.Sprite):
         self.attack = ""
         self.timer = 5
         self.health = 1
-        self.if_collide = 0
+        self.if_hit = False
 
     def update_animation(self, delta_time: float = 1 / 60):
 
@@ -211,19 +211,15 @@ class PlayerSprite(arcade.Sprite):
             else:
                 self.timer += 1
 
-    def CheckIfHit(self, if_collide):
+    def CheckIfHit(self):
 
-        if if_collide == "yes":
+        if self.if_hit == True:
             print("bleans")
             self.health -= 1
-            return
+            print(self.health)
 
+            
 
-
-
-
-
-                
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -364,7 +360,7 @@ class MyGame(arcade.Window):
 
         self.camera.move_to(player_centered)
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time, attack_frame):
 
         self.physics_engine.update()
         self.physics_engine_2.update()
@@ -381,8 +377,9 @@ class MyGame(arcade.Window):
         for collision in collision_list:
             
             if self.scene["enemy_1"] in collision.sprite_lists:
-                self.enemy_sprite_1.state = "attack"
-                self.player_sprite.CheckIfHit("yes")
+                #self.enemy_sprite_1.state = "attack"
+                self.player_sprite.if_hit = True
+                self.player_sprite.CheckIfHit()
                 return
             elif self.scene["enemy_2"] in collision.sprite_lists:
                 self.enemy_sprite_2.state = "attack"
