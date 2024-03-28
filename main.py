@@ -129,6 +129,9 @@ class Skeleton(arcade.Sprite):
             else:
                 self.timer += 1
 
+    def get_attack(self):
+        return self.attacking
+
 
 class PlayerSprite(arcade.Sprite):
 
@@ -209,6 +212,8 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
             else:
                 self.timer += 1
+
+    
 
             
 
@@ -370,7 +375,8 @@ class MyGame(arcade.Window):
             
             if self.scene["enemy_1"] in collision.sprite_lists:
                 #self.enemy_sprite_1.state = "attack"
-                if collision.attacking == True:
+                self.enemy_sprite_1.get_attack()
+                if Skeleton().attacking == True:
                     self.player_sprite.health -= 1
                     print("bleans")
                 return
