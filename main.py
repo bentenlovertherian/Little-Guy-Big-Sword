@@ -168,7 +168,6 @@ class PlayerSprite(arcade.Sprite):
             i += 1
         
 
-
         self.fall_textures = []
         texture = load_texture_pair(f"{self.path}_slash_1.png")
         self.fall_textures.append(texture)
@@ -223,11 +222,15 @@ class PlayerSprite(arcade.Sprite):
             if self.if_hit == True:
                 self.timer = 31
                 if self.timer > 30:
-                    self.texture = self.hit_texture_pair[self.character_face_direction]
-                    self.if_hit = False
+                    self.cur_texture += 1
+                    if self.cur_texture > 3:
+                        self.cur_texture = 0
+                        self.if_hit = False
+                    self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
                     self.timer = 0
                 else:
                     self.timer += 1
+
 
             return
             
@@ -241,8 +244,11 @@ class PlayerSprite(arcade.Sprite):
             if self.if_hit == True:
                 self.timer = 31
                 if self.timer > 30:
+                    self.cur_texture += 1
+                    if self.cur_texture > 3:
+                        self.cur_texture = 0
+                        self.if_hit = False
                     self.texture = self.hit_texture_pair[self.character_face_direction]
-                    self.if_hit = False
                     self.timer = 0
                 else:
                     self.timer += 1
