@@ -36,6 +36,44 @@ def load_texture_pair(filename):
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
 
+
+class Key(arcade.Sprite):
+    def __init__(self):
+        super().__init__()
+
+        filename = "./assets/key/key_"
+
+        self.textures = []
+        for i in range(1, 5):
+            texture = arcade.load_texture(f"{filename}{i}.png")
+            self.textures.append(texture)
+        texture = arcade.load_texture(f"{filename}3.png")
+        self.textures.append(texture)
+        texture = arcade.load_texture(f"{filename}2.png")
+        self.textures.append(texture)
+
+        print(len(self.textures))
+        
+        self.timer = 0
+        self.cur_texture = 0
+
+        self.scale = ENEMY_SCALING
+        
+        self.texture = self.textures[0]
+        self.hit_box = self.texture.hit_box_points
+
+    def update_animation(self):
+        
+        if self.timer > 20:
+            self.cur_texture += 1
+            if self.cur_texture > 5:
+                self.cur_texture = 0
+            self.texture = self.textures[self.cur_texture]
+            self.timer = 0
+        else:
+            self.timer += 1
+
+
 class Skeleton(arcade.Sprite):
 
     def __init__(self):
@@ -65,6 +103,7 @@ class Skeleton(arcade.Sprite):
             texture = load_texture_pair(f"{filename}/death/tile00{i}.png")
             self.death_textures.append(texture)
 
+        self.hit_texture_pair = load_texture_pair(f"{filename}/take_hit/tile001.png")
 
         self.texture = self.idle_texture_pair[0]
         self.hit_box = self.texture.hit_box_points
@@ -75,25 +114,28 @@ class Skeleton(arcade.Sprite):
         self.cur_texture = 0
         self.state = ""
         self.timer = 0
-        self.enemy_health = 10
+        self.enemy_health = 50
         self.attacking = False
         self.play_sound = 0
+        self.if_hit = False
         self.enemy_death_sound = arcade.load_sound("./assets/sounds/enemy_death.wav")
     
     def update_enemy_movement(self):
         
-        i = random.randint(1, 20)
-        if i == 1:
-            self.direction =  random.randint(0, 12)
-            if self.direction == 0:
-                if self.change_y == 0:
-                    self.change_y += ENEMY_JUMP_SPEED
-            elif self.direction >= 1 and self.direction <=4:
-                self.change_x = ENEMY_MOVEMENT_SPEED
-            elif self.direction >= 5 and self.direction <= 8:
-                self.change_x = -ENEMY_MOVEMENT_SPEED
-            elif self.direction >= 9:
-                self.change_x = 0
+        if self.state == "":
+
+            i = random.randint(1, 20)
+            if i == 1:
+                self.direction =  random.randint(0, 12)
+                if self.direction == 0:
+                    if self.change_y == 0:
+                        self.change_y += ENEMY_JUMP_SPEED
+                elif self.direction >= 1 and self.direction <=4:
+                    self.change_x = ENEMY_MOVEMENT_SPEED
+                elif self.direction >= 5 and self.direction <= 8:
+                    self.change_x = -ENEMY_MOVEMENT_SPEED
+                elif self.direction >= 9:
+                    self.change_x = 0
 
         elif self.state == "attack" or self.state == "dead":
             self.change_x = 0
@@ -108,7 +150,10 @@ class Skeleton(arcade.Sprite):
             elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
                 self.sprite_face_direction = RIGHT_FACING
             
-
+            if self.if_hit == True:
+                    self.texture = self.hit_texture_pair[self.sprite_face_direction]
+                    self.if_hit = False
+                    
             if self.state != "attack":
 
                 self.attacking = False
@@ -143,7 +188,7 @@ class Skeleton(arcade.Sprite):
                 else:
                     self.timer += 1
 
-        if self.enemy_health <= 0:
+        if self.enemy_health <= 0 and self.state != "dead":
                 
                 if self.timer > 6:
                     self.cur_texture += 1
@@ -158,7 +203,10 @@ class Skeleton(arcade.Sprite):
                 self.play_sound+= 1
                 if self.play_sound < 2:
                     arcade.play_sound(self.enemy_death_sound)
-                    self.play_sound += 1            
+                    self.play_sound += 1 
+
+        if self.state == "dead":
+            self.texture = self.death_textures[3][self.sprite_face_direction]
 
     def get_attack(self):
         return self.attacking
@@ -223,6 +271,9 @@ class PlayerSprite(arcade.Sprite):
         self.health = 10
         self.if_hit = False
         self.cur_texture = 0
+        self.play_sound = 0
+
+        self.player_death_sound = arcade.load_sound("./assets/sounds/player_death.wav")
 
 
     def update_animation(self, delta_time: float = 1 / 60):
@@ -237,6 +288,12 @@ class PlayerSprite(arcade.Sprite):
 
             if self.health < 0:
                 self.texture = self.death_texture_pair[self.character_face_direction]
+
+                self.play_sound+= 1
+                if self.play_sound < 2:
+                    arcade.play_sound(self.player_death_sound)
+                    self.play_sound += 1 
+
                 return
             
 
@@ -277,7 +334,6 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
             else:
                 self.timer += 1
-
 
 class MyGame(arcade.Window):
     """
@@ -322,6 +378,7 @@ class MyGame(arcade.Window):
         self.enemy_sprite_list = [self.enemy_sprite_1, self.enemy_sprite_2]
         self.enemy_physics_engines = [self.physics_engine_2, self.physics_engine_3]
 
+        self.ouch = arcade.load_sound("./assets/sounds/ouch.wav")
         self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
 
     def setup(self):
@@ -341,15 +398,14 @@ class MyGame(arcade.Window):
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
+
+        # Adds player sprite to scene.
         self.player_sprite = PlayerSprite()
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
 
-        # Calls skeleton function to add a new sprite and adds them to sprite list.
-        
-
-        
+        # Uses list of sprite objects and calls the Skeleton function and adds them to the scene.
         for self.new_enemy in self.enemy_sprite_list:
             a = self.enemy_sprite_list.index(self.new_enemy)
             self.new_enemy = Skeleton()
@@ -359,6 +415,11 @@ class MyGame(arcade.Window):
             sprite_string = f"enemy_{a + 1}"  
             self.collision_strings.append(sprite_string)
             self.scene.add_sprite(sprite_string, self.new_enemy)
+
+        self.key = Key()
+        self.key.center_x = 780
+        self.key.center_y = 690
+        self.scene.add_sprite("key", self.key)
         
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -387,7 +448,7 @@ class MyGame(arcade.Window):
         self.gui_camera.use()
 
     def on_key_press(self, key, modifiers):
-
+        
         if key == arcade.key.UP or key == arcade.key.W:
             if self.physics_engine.can_jump():
                 self.player_sprite.change_y = PLAYER_JUMP_SPEED
@@ -428,7 +489,8 @@ class MyGame(arcade.Window):
             i.update()
 
         self.player_sprite.update_animation()
-        
+        self.key.update_animation()
+
         for enemies in self.enemy_sprite_list:
             enemies.update_enemy_movement()
             enemies.update_enemy_animation()
@@ -445,16 +507,22 @@ class MyGame(arcade.Window):
                 if self.scene[i] in collision.sprite_lists:
                     index = self.collision_strings.index(i)
 
-                    # If the enemy hits the player the player health is decreased.
+                    # Changes the state of enemy to attack when it collides with the player.
                     self.enemy_sprite_list[index].state = "attack"
+
+                    # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
                     if self.enemy_sprite_list[index].get_attack() == True:
                         self.player_sprite.if_hit = True
                         self.counter += 1
                         if self.counter > 10:
                             self.counter = 0
                             self.player_sprite.health -= 1
+                            arcade.play_sound(self.ouch)
 
+                    # If the player hits the enemy sprite the enemy health decreases
                     if self.player_sprite.attack == True:
+                        
+                        self.enemy_sprite_list[index].if_hit = True
                         self.enemy_sprite_list[index].enemy_health -= 1
                         arcade.play_sound(self.player_hit)
      
