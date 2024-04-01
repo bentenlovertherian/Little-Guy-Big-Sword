@@ -17,7 +17,7 @@ SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 0.3
-PLAYER_JUMP_SPEED = 8
+PLAYER_JUMP_SPEED = 12
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 ENEMY_MOVEMENT_SPEED = 2
@@ -77,7 +77,8 @@ class Skeleton(arcade.Sprite):
         self.timer = 0
         self.enemy_health = 10
         self.attacking = False
-        self.if_dead = False
+        self.play_sound = 0
+        self.enemy_death_sound = arcade.load_sound("./assets/sounds/enemy_death.wav")
     
     def update_enemy_movement(self):
         
@@ -94,12 +95,11 @@ class Skeleton(arcade.Sprite):
             elif self.direction >= 9:
                 self.change_x = 0
 
-        elif self.state == "attack":
+        elif self.state == "attack" or self.state == "dead":
             self.change_x = 0
             self.change_y = 0
 
     def update_enemy_animation(self, delta_time: float = 1 / 60):
-
 
         if self.enemy_health > 0:
 
@@ -143,24 +143,25 @@ class Skeleton(arcade.Sprite):
                 else:
                     self.timer += 1
 
-        if self.enemy_health < 0:
+        if self.enemy_health <= 0:
                 
-                if self.timer > 10:
+                if self.timer > 6:
                     self.cur_texture += 1
                     if self.cur_texture > 3:
+                        self.state = "dead"
                         self.cur_texture = 0
                     self.texture = self.death_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
                 else:
                     self.timer += 1
-                
+
+                self.play_sound+= 1
+                if self.play_sound < 2:
+                    arcade.play_sound(self.enemy_death_sound)
+                    self.play_sound += 1            
 
     def get_attack(self):
         return self.attacking
-    
-    def check_death(self):
-        if self.if_dead == True:
-            self.texture = self.death_textures[3][self.sprite_face_direction]
 
 
 class PlayerSprite(arcade.Sprite):
@@ -278,8 +279,6 @@ class PlayerSprite(arcade.Sprite):
                 self.timer += 1
 
 
-  
-
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -322,6 +321,9 @@ class MyGame(arcade.Window):
         self.enemy_sprite_list = [self.enemy_sprite_1, self.enemy_sprite_2]
         self.enemy_physics_engines = [self.physics_engine_2, self.physics_engine_3]
 
+        self.player_slice = arcade.load_sound("./assets/sounds/player_slice.wav")
+        self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
+
     def setup(self):
 
 
@@ -351,8 +353,8 @@ class MyGame(arcade.Window):
         for self.new_enemy in self.enemy_sprite_list:
             a = self.enemy_sprite_list.index(self.new_enemy)
             self.new_enemy = Skeleton()
-            self.new_enemy.center_x = 550
-            self.new_enemy.center_y = 500
+            self.new_enemy.center_x = 350
+            self.new_enemy.center_y = 600
             self.enemy_sprite_list[a] = self.new_enemy
             sprite_string = f"enemy_{a + 1}"  
             self.scene.add_sprite(sprite_string, self.new_enemy)
@@ -395,6 +397,7 @@ class MyGame(arcade.Window):
 
         elif key == arcade.key.SPACE:
             self.player_sprite.attack = True
+      
     
     def on_key_release(self, key, modifiers):
 
@@ -420,7 +423,6 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time: float = 1 / 60):
 
         self.physics_engine.update()
-
         for i in self.enemy_physics_engines:
             i.update()
 
@@ -450,8 +452,8 @@ class MyGame(arcade.Window):
 
                 if self.player_sprite.attack == True:
                     self.enemy_sprite_list[0].enemy_health -= 1
+                    arcade.play_sound(self.player_hit)
 
-                return
             
             elif self.scene["enemy_2"] in collision.sprite_lists:
 
@@ -465,8 +467,8 @@ class MyGame(arcade.Window):
 
                 if self.player_sprite.attack == True:
                     self.enemy_sprite_list[1].enemy_health -= 1
+                    arcade.play_sound(self.player_hit)
 
-                return
             
         
 def main():
