@@ -176,7 +176,7 @@ class Skeleton(arcade.Sprite):
                         self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
 
             if self.state == "attack":
-                if self.timer > 10:
+                if self.timer > 5:
                     self.cur_texture += 1
                     if self.cur_texture > 7:
                         self.attacking = True
@@ -380,6 +380,7 @@ class MyGame(arcade.Window):
 
         self.ouch = arcade.load_sound("./assets/sounds/ouch.wav")
         self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
+        self.key_pickup = arcade.load_sound("./assets/sounds/key_pickup.wav")
 
     def setup(self):
 
@@ -447,6 +448,9 @@ class MyGame(arcade.Window):
 
         self.gui_camera.use()
 
+        draw_health = f"{self.player_sprite.health}"
+        arcade.draw_text(draw_health, 40, 700, arcade.csscolor.WHITE, 18)
+
     def on_key_press(self, key, modifiers):
         
         if key == arcade.key.UP or key == arcade.key.W:
@@ -497,7 +501,9 @@ class MyGame(arcade.Window):
 
 
         collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"],
-        self.scene["enemy_2"]])
+        self.scene["enemy_2"], 
+        self.scene["key"]
+        ])
 
         # If player collides with enemy sprite.
         for collision in collision_list:
@@ -525,7 +531,16 @@ class MyGame(arcade.Window):
                         self.enemy_sprite_list[index].if_hit = True
                         self.enemy_sprite_list[index].enemy_health -= 1
                         arcade.play_sound(self.player_hit)
-     
+
+
+            if self.scene["key"] in collision.sprite_lists:
+
+                self.key.remove_from_sprite_lists()
+                arcade.play_sound(self.key_pickup)
+
+
+
+
 def main():
     """Main function"""
     Window = MyGame()
