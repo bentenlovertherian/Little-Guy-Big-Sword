@@ -298,11 +298,12 @@ class MyGame(arcade.Window):
         self.player_sprite = None
 
         self.enemy_sprite_1 = None
-
         self.enemy_sprite_2 = None
 
         self.physics_engine_2 = None
         self.physics_engine_3 = None
+
+        self.collision_strings = []
 
         self.physics_engine = None
 
@@ -321,7 +322,6 @@ class MyGame(arcade.Window):
         self.enemy_sprite_list = [self.enemy_sprite_1, self.enemy_sprite_2]
         self.enemy_physics_engines = [self.physics_engine_2, self.physics_engine_3]
 
-        self.player_slice = arcade.load_sound("./assets/sounds/player_slice.wav")
         self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
 
     def setup(self):
@@ -357,6 +357,7 @@ class MyGame(arcade.Window):
             self.new_enemy.center_y = 600
             self.enemy_sprite_list[a] = self.new_enemy
             sprite_string = f"enemy_{a + 1}"  
+            self.collision_strings.append(sprite_string)
             self.scene.add_sprite(sprite_string, self.new_enemy)
         
 
@@ -433,44 +434,30 @@ class MyGame(arcade.Window):
             enemies.update_enemy_animation()
 
 
-        
-        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], self.scene["enemy_2"]])
+        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"],
+        self.scene["enemy_2"]])
 
         # If player collides with enemy sprite.
         for collision in collision_list:
-
-            if self.scene["enemy_1"] in collision.sprite_lists:
-
-                # If the enemy hits the player the player health is decreased.
-                self.enemy_sprite_list[0].state = "attack"
-                if self.enemy_sprite_list[0].get_attack() == True:
-                    self.player_sprite.if_hit = True
-                    self.counter += 1
-                    if self.counter > 10:
-                        self.counter = 0
-                        self.player_sprite.health -= 1
-
-                if self.player_sprite.attack == True:
-                    self.enemy_sprite_list[0].enemy_health -= 1
-                    arcade.play_sound(self.player_hit)
-
             
-            elif self.scene["enemy_2"] in collision.sprite_lists:
+            # Finds the index of the scene object to find the index of the enemy sprite object
+            for i in self.collision_strings:
+                if self.scene[i] in collision.sprite_lists:
+                    index = self.collision_strings.index(i)
 
-                self.enemy_sprite_list[1].state = "attack"
-                if self.enemy_sprite_list[1].get_attack() == True:
-                    self.player_sprite.if_hit = True
-                    self.counter += 1
-                    if self.counter > 10:
-                        self.counter = 0
-                        self.player_sprite.health -= 1
+                    # If the enemy hits the player the player health is decreased.
+                    self.enemy_sprite_list[index].state = "attack"
+                    if self.enemy_sprite_list[index].get_attack() == True:
+                        self.player_sprite.if_hit = True
+                        self.counter += 1
+                        if self.counter > 10:
+                            self.counter = 0
+                            self.player_sprite.health -= 1
 
-                if self.player_sprite.attack == True:
-                    self.enemy_sprite_list[1].enemy_health -= 1
-                    arcade.play_sound(self.player_hit)
-
-            
-        
+                    if self.player_sprite.attack == True:
+                        self.enemy_sprite_list[index].enemy_health -= 1
+                        arcade.play_sound(self.player_hit)
+     
 def main():
     """Main function"""
     Window = MyGame()
