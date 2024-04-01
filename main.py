@@ -2,6 +2,7 @@
 import arcade
 import os
 import random
+import time
 
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -16,7 +17,7 @@ SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 0.3
-PLAYER_JUMP_SPEED = 12
+PLAYER_JUMP_SPEED = 8
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 ENEMY_MOVEMENT_SPEED = 2
@@ -58,6 +59,11 @@ class Skeleton(arcade.Sprite):
         for i in range(8):
             texture = load_texture_pair(f"{filename}/attack/tile00{i}.png")
             self.attack_textures.append(texture)
+ 
+        self.death_textures = []
+        for i in range(4):
+            texture = load_texture_pair(f"{filename}/death/tile00{i}.png")
+            self.death_textures.append(texture)
 
 
         self.texture = self.idle_texture_pair[0]
@@ -69,7 +75,9 @@ class Skeleton(arcade.Sprite):
         self.cur_texture = 0
         self.state = ""
         self.timer = 0
+        self.enemy_health = 10
         self.attacking = False
+        self.if_dead = False
     
     def update_enemy_movement(self):
         
@@ -91,47 +99,68 @@ class Skeleton(arcade.Sprite):
             self.change_y = 0
 
     def update_enemy_animation(self, delta_time: float = 1 / 60):
-            
-        if self.change_x < 0 and self.sprite_face_direction == RIGHT_FACING:
-            self.sprite_face_direction = LEFT_FACING
-        elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
-            self.sprite_face_direction = RIGHT_FACING
-        
 
-        if self.state != "attack":
-            self.attacking = False
-            if self.change_x > 0 or self.change_x < 0:
-                if self.timer > 5:
-                    self.cur_texture +=1 
-                    if self.cur_texture > 3:
-                        self.cur_texture = 0
-                    self.texture = self.walk_textures[self.cur_texture][self.sprite_face_direction]
+
+        if self.enemy_health > 0:
+
+            if self.change_x < 0 and self.sprite_face_direction == RIGHT_FACING:
+                self.sprite_face_direction = LEFT_FACING
+            elif self.change_x > 0 and self.sprite_face_direction == LEFT_FACING:
+                self.sprite_face_direction = RIGHT_FACING
+            
+
+            if self.state != "attack":
+
+                self.attacking = False
+                if self.change_x > 0 or self.change_x < 0:
+                    if self.timer > 5:
+                        self.cur_texture +=1 
+                        if self.cur_texture > 3:
+                            self.cur_texture = 0
+                        self.texture = self.walk_textures[self.cur_texture][self.sprite_face_direction]
+                        self.timer = 0
+                    else:
+                        self.timer += 1
+
+                if self.change_x == 0:
+                    i = random.randint(0, 10)
+                    if i == 1:
+                        self.cur_texture +=1 
+                        if self.cur_texture > 3:
+                            self.cur_texture = 0
+                        self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
+
+            if self.state == "attack":
+                if self.timer > 10:
+                    self.cur_texture += 1
+                    if self.cur_texture > 7:
+                        self.attacking = True
+                        self.state = ""
+                        self.cur_texture = 0     
+                    self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
+
                 else:
                     self.timer += 1
 
-            if self.change_x == 0:
-                i = random.randint(0, 10)
-                if i == 1:
-                    self.cur_texture +=1 
+        if self.enemy_health < 0:
+                
+                if self.timer > 10:
+                    self.cur_texture += 1
                     if self.cur_texture > 3:
                         self.cur_texture = 0
-                    self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
-
-        if self.state == "attack":
-            if self.timer > 10:
-                self.cur_texture += 1
-                if self.cur_texture > 7:
-                    self.attacking = True
-                    self.state = ""
-                    self.cur_texture = 0     
-                self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
-                self.timer = 0
-            else:
-                self.timer += 1
+                    self.texture = self.death_textures[self.cur_texture][self.sprite_face_direction]
+                    self.timer = 0
+                else:
+                    self.timer += 1
+                
 
     def get_attack(self):
         return self.attacking
+    
+    def check_death(self):
+        if self.if_dead == True:
+            self.texture = self.death_textures[3][self.sprite_face_direction]
 
 
 class PlayerSprite(arcade.Sprite):
@@ -160,7 +189,7 @@ class PlayerSprite(arcade.Sprite):
 
         self.hit_textures = []
         i = 0
-        while i != 2:
+        while i != 10:
             texture = load_texture_pair(f"{self.path}_hit.png")
             self.hit_textures.append(texture)
             texture = load_texture_pair(f"{self.path}_0.png")
@@ -175,10 +204,10 @@ class PlayerSprite(arcade.Sprite):
         self.fall_textures.append(texture)
 
         self.attack_textures = []
-        texture = load_texture_pair(f"{self.path}_0.png")
-        self.attack_textures.append(texture)
-        texture = load_texture_pair(f"{self.path}_attack_0.png")
-        self.attack_textures.append(texture)
+        for i in range(1, 5):
+            texture = load_texture_pair(f"{self.path}_attack_{i}.png")
+            self.attack_textures.append(texture)
+
         
         self.walk_textures = []
         for i in range(2):
@@ -188,85 +217,66 @@ class PlayerSprite(arcade.Sprite):
                 self.walk_textures.append(texture)
                 x +=1
 
-        self.attack = ""
+        self.attack = False
         self.timer = 0
-        self.health = 109
+        self.health = 10
         self.if_hit = False
         self.cur_texture = 0
 
+
     def update_animation(self, delta_time: float = 1 / 60):
+        
 
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
 
+        if self.attack != True:
 
-        if self.health < 0:
-            self.texture = self.death_texture_pair[self.character_face_direction]
-            return
-        
-
-        if self.change_y < 0 and self.change_y > -1:
-            self.texture = self.fall_textures[0][self.character_face_direction]
-            return
-        
-        if self.change_y < 0:
-            self.texture = self.fall_textures[1][self.character_face_direction]
-            return
-    
-        if self.change_x == 0:
-
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-
-            if self.if_hit == True:
-                self.timer = 31
-                if self.timer > 30:
-                    self.cur_texture += 1
-                    if self.cur_texture > 3:
-                        self.cur_texture = 0
-                        self.if_hit = False
-                    self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
-                    self.timer = 0
-                else:
-                    self.timer += 1
-
-
-            return
+            if self.health < 0:
+                self.texture = self.death_texture_pair[self.character_face_direction]
+                return
             
-        if self.change_x > 0 or self.change_x < 0:
 
-            self.cur_texture += 1
-            if self.cur_texture > 9:
-                self.cur_texture = 0
-            self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+            if self.change_y < 0 and self.change_y > -1:
+                self.texture = self.fall_textures[0][self.character_face_direction]
+                return
+            
+            if self.change_y < 0:
+                self.texture = self.fall_textures[1][self.character_face_direction]
+                return
 
-            if self.if_hit == True:
-                self.timer = 31
-                if self.timer > 30:
-                    self.cur_texture += 1
-                    if self.cur_texture > 3:
-                        self.cur_texture = 0
-                        self.if_hit = False
-                    self.texture = self.hit_texture_pair[self.character_face_direction]
-                    self.timer = 0
-                else:
-                    self.timer += 1
 
-        if self.attack == "attack":
-            if self.timer > 5:
+            # Idle animation that only plays when the player is not being hit
+            if self.change_x == 0 and self.if_hit != True:
+                self.texture = self.idle_texture_pair[self.character_face_direction]
+                
+            if self.change_x > 0 or self.change_x < 0 and self.if_hit != True:
                 self.cur_texture += 1
-                if self.cur_texture > 1: 
+                if self.cur_texture > 9:
+                    self.cur_texture = 0
+                self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+
+            # Plays hit animation while the player is being hit
+            if self.if_hit == True:
+                self.cur_texture += 1
+                if self.cur_texture > 19:
+                    self.cur_texture = 0
+                    self.if_hit = False
+                self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
+
+        if self.attack == True:
+            if self.timer > 1:
+                self.cur_texture += 1
+                if self.cur_texture > 3: 
                     self.attack = ""
                     self.cur_texture = 0        
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
                 self.timer = 0
             else:
                 self.timer += 1
-        
-        #if self.if_hit == True:
-            #print("bleans")
-            #self.texture = self.hit_texture_pair[self.character_face_direction]
+
 
   
 
@@ -292,6 +302,9 @@ class MyGame(arcade.Window):
 
         self.enemy_sprite_2 = None
 
+        self.physics_engine_2 = None
+        self.physics_engine_3 = None
+
         self.physics_engine = None
 
         self.camera = None
@@ -305,6 +318,9 @@ class MyGame(arcade.Window):
         self.right_pressed = False
 
         self.counter = 0
+
+        self.enemy_sprite_list = [self.enemy_sprite_1, self.enemy_sprite_2]
+        self.enemy_physics_engines = [self.physics_engine_2, self.physics_engine_3]
 
     def setup(self):
 
@@ -328,22 +344,19 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
 
-        self.enemy_sprite_list = []
-
         # Calls skeleton function to add a new sprite and adds them to sprite list.
         
-        self.enemy_sprite_1 = Skeleton()
-        self.enemy_sprite_1.center_x = 950
-        self.enemy_sprite_1.center_y = PLAYER_START_Y
-        self.scene.add_sprite("enemy_1", self.enemy_sprite_1)
-        self.enemy_sprite_list.append(self.enemy_sprite_1)
 
-        self.enemy_sprite_2 = Skeleton()
-        self.enemy_sprite_2.center_x = 250
-        self.enemy_sprite_2.center_y = PLAYER_START_Y + 300
-        self.scene.add_sprite("enemy_2", self.enemy_sprite_2)  
-        self.enemy_sprite_list.append(self.enemy_sprite_2)
-    
+        
+        for self.new_enemy in self.enemy_sprite_list:
+            a = self.enemy_sprite_list.index(self.new_enemy)
+            self.new_enemy = Skeleton()
+            self.new_enemy.center_x = 550
+            self.new_enemy.center_y = 500
+            self.enemy_sprite_list[a] = self.new_enemy
+            sprite_string = f"enemy_{a + 1}"  
+            self.scene.add_sprite(sprite_string, self.new_enemy)
+        
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player_sprite, 
@@ -351,18 +364,13 @@ class MyGame(arcade.Window):
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
 
-    
-        self.physics_engine_2 = arcade.PhysicsEnginePlatformer(
-            self.enemy_sprite_1,
-            gravity_constant= GRAVITY,
-            walls=self.scene[LAYER_NAME_PLATFORMS]
-        )
-
-        self.physics_engine_3 = arcade.PhysicsEnginePlatformer(
-            self.enemy_sprite_2,
-            gravity_constant= GRAVITY,
-            walls=self.scene[LAYER_NAME_PLATFORMS]
-        )
+        for self.engine in self.enemy_physics_engines:
+            index = self.enemy_physics_engines.index(self.engine)
+            self.engine = arcade.PhysicsEnginePlatformer(
+                self.enemy_sprite_list[index],
+                gravity_constant= GRAVITY,
+                walls=self.scene[LAYER_NAME_PLATFORMS])
+            self.enemy_physics_engines[index] = self.engine
 
         
     def on_draw(self):
@@ -386,9 +394,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
         elif key == arcade.key.SPACE:
-            self.enemy_sprite_1.state = "attack"
-            self.enemy_sprite_2.state = "attack"
-            self.player_sprite.attack = "attack"
+            self.player_sprite.attack = True
     
     def on_key_release(self, key, modifiers):
 
@@ -414,15 +420,18 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time: float = 1 / 60):
 
         self.physics_engine.update()
-        self.physics_engine_2.update()
-        self.physics_engine_3.update()
+
+        for i in self.enemy_physics_engines:
+            i.update()
 
         self.player_sprite.update_animation()
         
-        for i in self.enemy_sprite_list:
-            i.update_enemy_movement()
-            i.update_enemy_animation()
+        for enemies in self.enemy_sprite_list:
+            enemies.update_enemy_movement()
+            enemies.update_enemy_animation()
 
+
+        
         collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"], self.scene["enemy_2"]])
 
         # If player collides with enemy sprite.
@@ -431,25 +440,35 @@ class MyGame(arcade.Window):
             if self.scene["enemy_1"] in collision.sprite_lists:
 
                 # If the enemy hits the player the player health is decreased.
-                self.enemy_sprite_1.state = "attack"
-                if self.enemy_sprite_1.get_attack() == True:
+                self.enemy_sprite_list[0].state = "attack"
+                if self.enemy_sprite_list[0].get_attack() == True:
                     self.player_sprite.if_hit = True
                     self.counter += 1
                     if self.counter > 10:
                         self.counter = 0
                         self.player_sprite.health -= 1
+
+                if self.player_sprite.attack == True:
+                    self.enemy_sprite_list[0].enemy_health -= 1
+
                 return
             
             elif self.scene["enemy_2"] in collision.sprite_lists:
-                self.enemy_sprite_2.state = "attack"
-                if self.enemy_sprite_2.get_attack() == True:
+
+                self.enemy_sprite_list[1].state = "attack"
+                if self.enemy_sprite_list[1].get_attack() == True:
                     self.player_sprite.if_hit = True
                     self.counter += 1
                     if self.counter > 10:
                         self.counter = 0
                         self.player_sprite.health -= 1
-                return
 
+                if self.player_sprite.attack == True:
+                    self.enemy_sprite_list[1].enemy_health -= 1
+
+                return
+            
+        
 def main():
     """Main function"""
     Window = MyGame()
