@@ -376,7 +376,10 @@ class MyGame(arcade.Window):
 
         self.counter = 0
 
+        # List of enemy sprite objects.
         self.enemy_sprite_list = [self.enemy_sprite_1, self.enemy_sprite_2]
+
+        # List of physics engines for each enemy
         self.enemy_physics_engines = [self.physics_engine_2, self.physics_engine_3]
 
         self.ouch = arcade.load_sound("./assets/sounds/ouch.wav")
@@ -409,15 +412,21 @@ class MyGame(arcade.Window):
 
         # Uses list of sprite objects and calls the Skeleton function and adds them to the scene.
         for self.new_enemy in self.enemy_sprite_list:
+
+
             a = self.enemy_sprite_list.index(self.new_enemy)
             self.new_enemy = Skeleton()
+
             self.new_enemy.center_x = 350
             self.new_enemy.center_y = 600
+
             self.enemy_sprite_list[a] = self.new_enemy
             sprite_string = f"enemy_{a + 1}"  
             self.collision_strings.append(sprite_string)
             self.scene.add_sprite(sprite_string, self.new_enemy)
 
+        # Adds key sprite to the game.
+        # Calls key class to create a key object.
         self.key = Key()
         self.key.center_x = 780
         self.key.center_y = 690
