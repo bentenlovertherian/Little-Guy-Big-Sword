@@ -194,6 +194,7 @@ class Skeleton(arcade.Sprite):
                     self.cur_texture += 1
                     if self.cur_texture > 3:
                         self.state = "dead"
+                        self.attacking = False
                         self.cur_texture = 0
                     self.texture = self.death_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
