@@ -281,57 +281,58 @@ class PlayerSprite(arcade.Sprite):
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
 
+        print(self.attack)
+
+        
+        if self.health <= 0:
+            self.texture = self.death_texture_pair[self.character_face_direction]
+
+            self.play_sound+= 1
+            if self.play_sound < 2:
+                arcade.play_sound(self.player_death_sound)
+                self.play_sound += 1 
+
+            return
+        
+
+        if self.change_y < 0 and self.change_y > -1:
+            self.texture = self.fall_textures[0][self.character_face_direction]
+            return
+        
+        if self.change_y < 0:
+            self.texture = self.fall_textures[1][self.character_face_direction]
+            return
+
+
+        # Idle animation that only plays when the player is not being hit
+        if self.change_x == 0 and self.if_hit != True:
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+
+        # Walking animation plays when the player moves horizontally and the player isn't being hit.    
+        if self.change_x > 0 or self.change_x < 0 and self.if_hit != True:
+            self.cur_texture += 1
+            if self.cur_texture > 9:
+                self.cur_texture = 0
+            self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+
+        # Plays hit animation while the player is being hit
+        if self.if_hit == True:
+            self.cur_texture += 1
+            if self.cur_texture > 19:
+                self.cur_texture = 0
+                self.if_hit = False
+            self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
 
         if self.attack == True:
             if self.timer > 1:
                 self.cur_texture += 1
                 if self.cur_texture > 3: 
-                    self.cur_texture = 0      
+                    self.cur_texture = 0
+                    self.attack = False
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
                 self.timer = 0
             else:
                 self.timer += 1
-
-        if self.attack == False:
-
-            if self.health <= 0:
-                self.texture = self.death_texture_pair[self.character_face_direction]
-
-                self.play_sound+= 1
-                if self.play_sound < 2:
-                    arcade.play_sound(self.player_death_sound)
-                    self.play_sound += 1 
-
-                return
-            
-
-            if self.change_y < 0 and self.change_y > -1:
-                self.texture = self.fall_textures[0][self.character_face_direction]
-                return
-            
-            if self.change_y < 0:
-                self.texture = self.fall_textures[1][self.character_face_direction]
-                return
-
-
-            # Idle animation that only plays when the player is not being hit
-            if self.change_x == 0 and self.if_hit != True:
-                self.texture = self.idle_texture_pair[self.character_face_direction]
-
-            # Walking animation plays when the player moves horizontally and the player isn't being hit.    
-            if self.change_x > 0 or self.change_x < 0 and self.if_hit != True:
-                self.cur_texture += 1
-                if self.cur_texture > 9:
-                    self.cur_texture = 0
-                self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
-
-            # Plays hit animation while the player is being hit
-            if self.if_hit == True:
-                self.cur_texture += 1
-                if self.cur_texture > 19:
-                    self.cur_texture = 0
-                    self.if_hit = False
-                self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
 
 class MyGame(arcade.Window):
     """
@@ -480,21 +481,6 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = 0
-        
-
-
-    def center_camera_to_player(self):
-        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player_sprite.center_y - (
-            self.camera.viewport_height / 2
-        )
-        if screen_center_x < 0:
-            screen_center_x = 0
-        if screen_center_y < 0:
-            screen_center_y = 0
-        player_centered = screen_center_x, screen_center_y
-
-        self.camera.move_to(player_centered)
 
     def on_update(self, delta_time: float = 1 / 60):
 
@@ -541,6 +527,7 @@ class MyGame(arcade.Window):
                         self.enemy_sprite_list[index].if_hit = True
                         self.enemy_sprite_list[index].enemy_health -= 1
                         arcade.play_sound(self.player_hit)
+
 
 
             if self.scene["key"] in collision.sprite_lists:
