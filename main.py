@@ -275,14 +275,10 @@ class PlayerSprite(arcade.Sprite):
 
     def update_animation(self, delta_time: float = 1 / 60):
         
-
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-
-        print(self.attack)
-
         
         if self.health <= 0:
             self.texture = self.death_texture_pair[self.character_face_direction]
@@ -293,48 +289,48 @@ class PlayerSprite(arcade.Sprite):
                 self.play_sound += 1 
 
             return
+
+        if self.attack == False:
+
+            if self.change_y < 0 and self.change_y > -1:
+                self.texture = self.fall_textures[0][self.character_face_direction]
+                
+            
+            if self.change_y < 0:
+                self.texture = self.fall_textures[1][self.character_face_direction]
+                
+
+            # Idle animation that only plays when the player is not being hit
+            if self.change_x == 0 and self.if_hit != True:
+                self.texture = self.idle_texture_pair[self.character_face_direction]
+
+            # Walking animation plays when the player moves horizontally and the player isn't being hit.    
+            if self.change_x > 0 or self.change_x < 0 and self.if_hit != True:
+                self.cur_texture += 1
+                if self.cur_texture > 9:
+                    self.cur_texture = 0
+                self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
+
+            # Plays hit animation while the player is being hit
+            if self.if_hit == True:
+                self.cur_texture += 1
+                if self.cur_texture > 19:
+                    self.cur_texture = 0
+                    self.if_hit = False
+                self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
         
-
-        if self.change_y < 0 and self.change_y > -1:
-            self.texture = self.fall_textures[0][self.character_face_direction]
-            return
-        
-        if self.change_y < 0:
-            self.texture = self.fall_textures[1][self.character_face_direction]
-            return
-
-
-        # Idle animation that only plays when the player is not being hit
-        if self.change_x == 0 and self.if_hit != True:
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-
-        # Walking animation plays when the player moves horizontally and the player isn't being hit.    
-        if self.change_x > 0 or self.change_x < 0 and self.if_hit != True:
-            self.cur_texture += 1
-            if self.cur_texture > 9:
-                self.cur_texture = 0
-            self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
-
-        # Plays hit animation while the player is being hit
-        if self.if_hit == True:
-            self.cur_texture += 1
-            if self.cur_texture > 19:
-                self.cur_texture = 0
-                self.if_hit = False
-            self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
-
         if self.attack == True:
             if self.timer > 1:
                 self.cur_texture += 1
                 if self.cur_texture > 3: 
                     self.cur_texture = 0
-                    self.attack = False
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
                 self.timer = 0
             else:
                 self.timer += 1
 
 class MyGame(arcade.Window):
+
     """
     Main application class.
     """
@@ -472,7 +468,6 @@ class MyGame(arcade.Window):
 
         elif key == arcade.key.SPACE:
             self.player_sprite.attack = True
-            
       
     
     def on_key_release(self, key, modifiers):
@@ -481,6 +476,9 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_sprite.change_x = 0
+        
+        elif key == arcade.key.SPACE:
+            self.player_sprite.attack = False
 
     def on_update(self, delta_time: float = 1 / 60):
 
@@ -527,6 +525,11 @@ class MyGame(arcade.Window):
                         self.enemy_sprite_list[index].if_hit = True
                         self.enemy_sprite_list[index].enemy_health -= 1
                         arcade.play_sound(self.player_hit)
+
+                        self.attack_counter += 1
+                        if self.attack_counter > 5:
+                            self.player_sprite.attack = False
+                            self.attack_counter = 0
 
 
 
