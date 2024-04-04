@@ -2,6 +2,7 @@
 import arcade
 import os
 import random
+import time
 
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -17,8 +18,6 @@ SCREEN_TITLE = "Little Guy Big Sword"
 CHARACTER_SCALING = 2
 ENEMY_SCALING = 1.2
 TILE_SCALING = 1.5
-SPRITE_PIXEL_SIZE = 128
-GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 0.3
 PLAYER_JUMP_SPEED = 12
@@ -28,6 +27,8 @@ ENEMY_MOVEMENT_SPEED = 2
 ENEMY_JUMP_SPEED = 7
 
 LAYER_NAME_PLATFORMS = "Platforms"
+LAYER_NAME_DOOR = "Door"
+LAYER_NAME_ENEMIES = "Enemies"
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
@@ -276,6 +277,8 @@ class PlayerSprite(arcade.Sprite):
         self.if_hit = False
         self.cur_texture = 0
         self.play_sound = 0
+        self.door_unlock = False
+        self.lives = 3
 
         self.player_death_sound = arcade.load_sound("./assets/sounds/player_death.wav")
 
@@ -288,13 +291,7 @@ class PlayerSprite(arcade.Sprite):
             self.character_face_direction = RIGHT_FACING
         
         if self.health <= 0:
-            self.texture = self.death_texture_pair[self.character_face_direction]
-
-            self.play_sound+= 1
-            if self.play_sound < 2:
-                arcade.play_sound(self.player_death_sound)
-                self.play_sound += 1 
-
+            self.if_killed()
             return
 
         if self.attack == False:
@@ -327,9 +324,10 @@ class PlayerSprite(arcade.Sprite):
                 self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
         
         if self.attack == True:
-
-            self.change_x = 0
-            self.change_y = 0
+            
+            if self.change_y < 0:
+                self.change_x = 0
+                self.change_y = 0
 
             if self.timer > 1:
                 self.cur_texture += 1
@@ -339,6 +337,14 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
             else:
                 self.timer += 1
+        
+    def if_killed(self):
+
+        arcade.play_sound(self.player_death_sound)
+        self.health = 10
+        self.center_x = PLAYER_START_X
+        self.center_y = PLAYER_START_Y
+        self.lives -=1
 
 class MyGame(arcade.Window):
 
@@ -368,7 +374,7 @@ class MyGame(arcade.Window):
         self.collision_strings = []
 
         self.physics_engine = None
-
+        
         self.camera = None
 
         self.gui_camera = None
@@ -391,6 +397,8 @@ class MyGame(arcade.Window):
         self.ouch = arcade.load_sound("./assets/sounds/ouch.wav")
         self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
         self.key_pickup = arcade.load_sound("./assets/sounds/key_pickup.wav")
+        self.walk_sound = arcade.load_sound("./assets/sounds/move.wav")
+        self.jump_sound = arcade.load_sound("./assets/sounds/jump.wav")
 
     def setup(self):
 
@@ -403,12 +411,11 @@ class MyGame(arcade.Window):
         #map_name = f":resources:tiled_maps/map2_level_{self.level}.json"
         map_name = "maps/map1.tmx"
 
-        layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,},}
+        layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,}, LAYER_NAME_DOOR: {"use_spatial_hash": True},}
 
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
-
 
         # Adds player sprite to scene.
         self.player_sprite = PlayerSprite()
@@ -419,7 +426,6 @@ class MyGame(arcade.Window):
         # Uses list of sprite objects and calls the Skeleton function and adds them to the scene.
         for self.new_enemy in self.enemy_sprite_list:
 
-
             a = self.enemy_sprite_list.index(self.new_enemy)
             self.new_enemy = Skeleton()
 
@@ -427,24 +433,21 @@ class MyGame(arcade.Window):
             self.new_enemy.center_y = 600
 
             self.enemy_sprite_list[a] = self.new_enemy
-            sprite_string = f"enemy_{a + 1}"  
-            self.collision_strings.append(sprite_string)
-            self.scene.add_sprite(sprite_string, self.new_enemy)
+            self.scene.add_sprite(LAYER_NAME_ENEMIES, self.new_enemy)
 
         # Adds key sprite to the game.
         # Calls key class to create a key object.
         self.key = Key()
         self.key.center_x = 780
         self.key.center_y = 690
-        self.scene.add_sprite("key", self.key)
-        
+        self.scene.add_sprite("key", self.key)        
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player_sprite, 
             gravity_constant=GRAVITY,
             walls=self.scene[LAYER_NAME_PLATFORMS],
         )
-
+        
         for self.engine in self.enemy_physics_engines:
             index = self.enemy_physics_engines.index(self.engine)
             self.engine = arcade.PhysicsEnginePlatformer(
@@ -469,16 +472,23 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         
-        if key == arcade.key.UP or key == arcade.key.W:
-            if self.physics_engine.can_jump():
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+        if self.player_sprite.health > 0:
 
-        elif key == arcade.key.SPACE:
-            self.player_sprite.attack = True
+            if key == arcade.key.UP or key == arcade.key.W:
+                if self.physics_engine.can_jump():
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                    arcade.play_sound(self.jump_sound)
+
+            elif key == arcade.key.LEFT or key == arcade.key.A:
+                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+                arcade.play_sound(self.walk_sound)
+
+            elif key == arcade.key.RIGHT or key == arcade.key.D:
+                self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+                arcade.play_sound(self.walk_sound)
+
+            elif key == arcade.key.SPACE:
+                self.player_sprite.attack = True
       
     
     def on_key_release(self, key, modifiers):
@@ -493,6 +503,7 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time: float = 1 / 60):
 
+        # Updates the physics engines
         self.physics_engine.update()
         for i in self.enemy_physics_engines:
             i.update()
@@ -500,29 +511,31 @@ class MyGame(arcade.Window):
         self.player_sprite.update_animation()
         self.key.update_animation()
 
+        # Updates the enemy movement and animation.
         for enemies in self.enemy_sprite_list:
             enemies.update_enemy_movement()
             enemies.update_enemy_animation()
 
-
-        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["enemy_1"],
-        self.scene["enemy_2"], 
-        self.scene["key"]
-        ])
-
-        # If player collides with enemy sprite.
+        
+        collision_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene["key"]])
+    
         for collision in collision_list:
+        
+            if self.scene["key"] in collision.sprite_lists:
+
+                self.key.remove_from_sprite_lists()
+                arcade.play_sound(self.key_pickup)
+
+        enemy_hit_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene[LAYER_NAME_ENEMIES]])
+
+         # If player collides with enemy sprite.
+        for enemy in enemy_hit_list:
             
-            # Finds the index of the scene object to find the index of the enemy sprite object
-            for i in self.collision_strings:
-                if self.scene[i] in collision.sprite_lists:
-                    index = self.collision_strings.index(i)
+            # Changes the state of enemy to attack when it collides with the player.
+            enemy.state = "attack"
 
-                    # Changes the state of enemy to attack when it collides with the player.
-                    self.enemy_sprite_list[index].state = "attack"
-
-                    # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
-                    if self.enemy_sprite_list[index].get_attack() == True:
+            # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
+            if enemy.get_attack() == True:
                         self.player_sprite.if_hit = True
                         self.counter += 1
                         if self.counter == 7:
@@ -530,25 +543,17 @@ class MyGame(arcade.Window):
                             arcade.play_sound(self.ouch)
                             self.counter = 0
 
-                    # If the player hits the enemy sprite the enemy health decreases
-                    if self.player_sprite.attack == True:
+            # If the player hits the enemy sprite the enemy health decreases        
+            if self.player_sprite.attack == True:
                         
-                        self.enemy_sprite_list[index].if_hit = True
-                        self.enemy_sprite_list[index].enemy_health -= 1
+                        enemy.if_hit = True
+                        enemy.enemy_health -= 1
                         arcade.play_sound(self.player_hit)
 
                         self.attack_counter += 1
                         if self.attack_counter > 5:
                             self.player_sprite.attack = False
                             self.attack_counter = 0
-
-
-
-            if self.scene["key"] in collision.sprite_lists:
-
-                self.key.remove_from_sprite_lists()
-                arcade.play_sound(self.key_pickup)
-
 
 
 

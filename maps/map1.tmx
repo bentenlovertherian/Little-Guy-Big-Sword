@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="14" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="42" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="18" nextobjectid="6">
  <tileset firstgid="1" source="../assets/Jungle Assets/jungle_tileset.tsx"/>
  <tileset firstgid="1105" source="../assets/Castle Assets/castle_tileset.tsx"/>
  <imagelayer id="13" name="Image Layer 5" tintcolor="#6ec464" offsetx="0" offsety="400">
@@ -19,17 +19,22 @@
  </imagelayer>
  <layer id="3" name="second background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt1bEJACAMBEALJ3QM9x9AggjWFmrgDtJ/kU9KAcin19cJgFui71k7nzU3Oe1d+X33fs8HEJpbdWT9o9NhGmV6Cqc=
+   eJzt1UEKACAIRFEXndBjdP8DhEjQMtzk0H/QfpBGzQA9c7xOcEclpyJmC/wj+q7aedXc0HR2pfvf654PAIKzq0r2Pao+pAWzNAuD
   </data>
  </layer>
  <layer id="2" name="background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJztl00OgjAQhVn0hN4Cij0DN3ClLtwTjikknTAO0+mQlloNL3nBNiF+nc6PNs2pf9HFrD516tfVma3d7N77OXuoINeBDbis5wR3lXFK5jhLs2Oe3vDr2jgt+Wwr5LSBO6+FExRilHQznz6SzQlxXDzObhn2kvGkteNIXnIG5tKcXJ1LnFLOUuU6i0NxpJyxfCjJCd95N+v6QdhxbsKMar/ECcLzEjhHof5jPWHIlMfSvYY4ubyQODV7KZyhOt/TY4/i5HoSF09aY6U5NX0fzx+6p1EKJ60f+nuE66mx84TinMop9fllDbOgJU/pTnKKcuKe9EL7eGZdvTlGzYyg1sRYen9S3rEz27NqZu9ezhx3kuIa/n/l0Bu8Ua1r
+   eJztl18OgjAMxvewE3oLGO4M3MAn9cF34jGFhIZaulKyMUvil3zBLSH+1vWPOudc69e2qD+nrItfrNE/nmV1Fs6ziItnHN3Nfo7uDcQY2IArzJzg1hinZI6zNjvm6Ty/tsYZyOdgkDMk7twKJyjFKOnmv30kWxTiOHkY3TDsNeNJayeSvOQMzLU5uTqXOKWcpSp1lojiSDm38qEmJ3zn3S/rB2HHuQkzqvkRJwjPS+AchPrf6gl9oTyW7jXFyeWFxKnZy+FM1fmeHnsUJ9eTuHjSGqvNqen7eP7QPY1yOGn90N8jXE/dOk8qzrmcUp+f1jALGvKU7qSkKCfuSS+0j2fWdTbHqJkR1JoYS++/lXcc/fqsmtm7l7PEneTYwv+vEvoA0XG6Tw==
   </data>
  </layer>
  <layer id="1" name="Platforms" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJztl0EOgjAURAnpBQvdELuShYk7z+EB2JmYuDJex/uosQ2fsaVAW2gTJ5loMZbH0P8LnBVJqHZw8Ew4hQdnxXoLNhyj6e81++WqMsnTpT9nWHG1ZnbEEsbaW+qYSZ4+nLp+ObGrbpcqdJ42Tg7XM7cfrsXpq1Q5deZC5b+U09bP9H0NLbr+bXsgXVcSxlP5fbU0z24kzxgKvT4byLsJNH+qdYTKhTO0ZCRO3adwv7DVAz6z4DMK5ol9JFbfcgnPm+p9z4lTbMy5Z0ML9UllyrNS+5b+7qspcyAXylUXIWrmw3lxzBOCk74PS9a/F6PHOB8e13tSayFWz9Ty4Ty//3ddqR/SHtwqS5VRS4xjk+/l1zeDTccPxTw/y23cFfP8Ak/6cKo=
+   eJzVl0sOgyAQhonhgiobU1Z10aS7nqMHcNekSVdNr9P7VFNIx+kgykv4kz+KD/wYYMCaM9YQrkenVGv5noknN07hwQnjLwz9Qt1v+T9X4xhP23uplbp/XVUS59THB2CJytp7tulcSDx9OGGu1Y41/0LH08RZo/aY8qFJqTh9lSunjrlQ8XflXFpvY+QFOP5NayAcVxKV1/L7yjWeQ+L9S+jx2aF4d4Hqz3UeYZXCGVoyEqfOU3i9WNqXUnsUeB8/D/NIrLxlE/5urv1eEqfYmfPI5xbqCEXFs1Hrlj731Zo6MBeWbV6EmDMT581STwhO+D8s+e+/GHuJ8+XR3osaC7FyppYP53V8754oH8Ic3CtLFaMeGJcpP6uvH4Sp6ye2ze9qHw9smz9F73QC
+  </data>
+ </layer>
+ <layer id="17" name="Door" width="42" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztzjENADAIADAO/GvYiUws8A2SVkEj4J6XvwczdeQJAAAA7NHpgwFR
   </data>
  </layer>
 </map>
