@@ -6,6 +6,11 @@ import random
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Little Guy Big Sword"
+#Feedback:
+# add locked door
+# make it so u stop moving 1nce dead
+
+# Make so the player dies when the health is below zero using "<=" symbol instead of "="
 
 #feature notes: have key unlock door to spawn point
 
@@ -175,9 +180,11 @@ class Skeleton(arcade.Sprite):
                 if self.timer > 5:
                     self.cur_texture += 1
                     if self.cur_texture > 7:
-                        self.attacking = True
+                        self.attacking = False
                         self.state = ""
-                        self.cur_texture = 0     
+                        self.cur_texture = 0
+                    if self.cur_texture == 7:
+                        self.attacking = True  
                     self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
 
@@ -294,11 +301,11 @@ class PlayerSprite(arcade.Sprite):
 
             if self.change_y < 0 and self.change_y > -1:
                 self.texture = self.fall_textures[0][self.character_face_direction]
-                
+                return
             
             if self.change_y < 0:
                 self.texture = self.fall_textures[1][self.character_face_direction]
-                
+                return
 
             # Idle animation that only plays when the player is not being hit
             if self.change_x == 0 and self.if_hit != True:
@@ -320,9 +327,13 @@ class PlayerSprite(arcade.Sprite):
                 self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
         
         if self.attack == True:
+
+            self.change_x = 0
+            self.change_y = 0
+
             if self.timer > 1:
                 self.cur_texture += 1
-                if self.cur_texture > 3: 
+                if self.cur_texture > 3:
                     self.cur_texture = 0
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
                 self.timer = 0
@@ -514,10 +525,10 @@ class MyGame(arcade.Window):
                     if self.enemy_sprite_list[index].get_attack() == True:
                         self.player_sprite.if_hit = True
                         self.counter += 1
-                        if self.counter > 10:
-                            self.counter = 0
+                        if self.counter == 7:
                             self.player_sprite.health -= 1
                             arcade.play_sound(self.ouch)
+                            self.counter = 0
 
                     # If the player hits the enemy sprite the enemy health decreases
                     if self.player_sprite.attack == True:
