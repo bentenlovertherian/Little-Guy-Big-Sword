@@ -29,7 +29,7 @@ ENEMY_HEALTH = 30
 RESPAWN_TIME = 300
 
 # Amount of kills needed to complete a level.
-SCORE_AMOUNT = 2
+SCORE_AMOUNT = 20
 
 # Spawn point coordinates for each map.
 MAP_ONE_SPAWN_POINTS = [171, 530, 417, 655, 718, 517.5]
@@ -595,7 +595,7 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time: float = 1 / 60):
         '''Updates the game 60 times per second'''
-        
+
         # Updates the physics engines
         self.physics_engine.update()
         for i in self.enemy_physics_engines:
