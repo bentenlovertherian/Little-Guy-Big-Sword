@@ -271,7 +271,7 @@ class Skeleton(arcade.Sprite):
         return self.state
 
 class PlayerSprite(arcade.Sprite):
-
+    '''Class that runs the player sprite'''
     def __init__(self):
 
         super().__init__()
@@ -493,7 +493,7 @@ class MyGame(arcade.Window):
         self.end = arcade.load_sound("./assets/sounds/end.wav")
 
     def setup(self):
-
+        '''Initializes all sprites and maps'''
 
         self.camera = arcade.Camera(self.width, self.height)
 
@@ -594,7 +594,8 @@ class MyGame(arcade.Window):
             self.player_sprite.attack = False
 
     def on_update(self, delta_time: float = 1 / 60):
-
+        '''Updates the game 60 times per second'''
+        
         # Updates the physics engines
         self.physics_engine.update()
         for i in self.enemy_physics_engines:
@@ -673,10 +674,6 @@ class MyGame(arcade.Window):
             self.level = 1
             self.setup()
             self.lives = MAX_LIVES
-
-
-
-
 
 def main():
     '''Main Function.'''
