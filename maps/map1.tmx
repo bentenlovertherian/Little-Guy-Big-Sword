@@ -19,17 +19,17 @@
  </imagelayer>
  <layer id="3" name="second background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJzt1UEKACAIRFEXndBjdP8DhEjQMtzk0H/QfpBGzQA9c7xOcEclpyJmC/wj+q7aedXc0HR2pfvf654PAIKzq0r2Pao+pAWzNAuD
+   eJzt1UsKACAIRdEGrbBltKKWGxJCwxAhH9wDzh/ipzVAz+y/E7xRyanIemu1BHqsMgfkzEXOPL7vilRzQ9O9K9Vnr3o+ADCDWxXi/yhaODYVbA6z
   </data>
  </layer>
  <layer id="2" name="background" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJztl18OgjAMxvewE3oLGO4M3MAn9cF34jGFhIZaulKyMUvil3zBLSH+1vWPOudc69e2qD+nrItfrNE/nmV1Fs6ziItnHN3Nfo7uDcQY2IArzJzg1hinZI6zNjvm6Ty/tsYZyOdgkDMk7twKJyjFKOnmv30kWxTiOHkY3TDsNeNJayeSvOQMzLU5uTqXOKWcpSp1lojiSDm38qEmJ3zn3S/rB2HHuQkzqvkRJwjPS+AchPrf6gl9oTyW7jXFyeWFxKnZy+FM1fmeHnsUJ9eTuHjSGqvNqen7eP7QPY1yOGn90N8jXE/dOk8qzrmcUp+f1jALGvKU7qSkKCfuSS+0j2fWdTbHqJkR1JoYS++/lXcc/fqsmtm7l7PEneTYwv+vEvoA0XG6Tw==
+   eJztlsEOgjAMhnfYy+Jwz+AbeNKLd+NjqpHG5qftANcBiU0aFIn91v5tCSGEQxz7Fu3PWdeILe+Ecy/53DrnHDvHr6P1zufj+uTeD075xeewBt6cmcV5exKY83Bf6rlWetFiYny8x8/QmrOP41pqnJIOWnEm+JwKnCmO8+5lWsxS3TWteltJo2tyWr1Lfn95V8ivtz6xd2j+WBrgzKkhp9TnFqc05705M8ThnJIetF3UKp8XprkrxO4ETtQr/ebNSYa7kvpI62dpfnE7xY/X4rTmDXJauvCyOXNSqvVanNJMkvLZ+n3JqvcS9+a03jUTXOecx4MT64/faRd0cLVqUtOQk8+kG7vPd9ZxcIlRmwXSWcinzC7rvx4Ta4x7CrVT0spUzho1+cVr7IIt2BNfk9bL
   </data>
  </layer>
  <layer id="1" name="Platforms" width="42" height="30">
   <data encoding="base64" compression="zlib">
-   eJzVl0sOgyAQhonhgiobU1Z10aS7nqMHcNekSVdNr9P7VFNIx+kgykv4kz+KD/wYYMCaM9YQrkenVGv5noknN07hwQnjLwz9Qt1v+T9X4xhP23uplbp/XVUS59THB2CJytp7tulcSDx9OGGu1Y41/0LH08RZo/aY8qFJqTh9lSunjrlQ8XflXFpvY+QFOP5NayAcVxKV1/L7yjWeQ+L9S+jx2aF4d4Hqz3UeYZXCGVoyEqfOU3i9WNqXUnsUeB8/D/NIrLxlE/5urv1eEqfYmfPI5xbqCEXFs1Hrlj731Zo6MBeWbV6EmDMT581STwhO+D8s+e+/GHuJ8+XR3osaC7FyppYP53V8754oH8Ic3CtLFaMeGJcpP6uvH4Sp6ye2ze9qHw9smz9F73QC
+   eJztl0sOgjAQhhvSCwLdELuShYk7z+EBXJu48j7eR4mdZJz0Yd9t9E/+GEDKxzAzDCNnbNJ4bNA6mfbX0MYiOuE08UyVOHHugWycOa9POVwqyRkj4NzubYcsyTaY3pNPXcZyHhOv2wtnjvoryUlzw9QPTef+4xkuHHPB262jbY2ZGPcmsLDMJNLRg3qp9144FxLvJVEetFBHrndaK5wu5cglmYkT+tS38wSdWcD4OP0/7iMhs0qK+Yaukeu5/xKnqMy5558W6te2BuSi5P7fF6GcwBqzRqr3fQlOiOus4kxnDHAMp00nlQs5eiZWDOf5dd41sB/6Cj+TVVmqGK3IdFvn+/D2TWPd/gPz82Oo4wvz8xO9wIY+
   </data>
  </layer>
  <layer id="17" name="Door" width="42" height="30">

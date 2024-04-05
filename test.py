@@ -1,8 +1,5 @@
-import arcade
-import time
+import random
 
 
-start = time.time()
-print("hello")
-end = time.time()
-print(end - start)
+radfm = random.randint(1, 3)
+print(radfm)

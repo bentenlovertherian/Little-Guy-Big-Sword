@@ -1,0 +1,85 @@
+{ "compressionlevel":-1,
+ "height":30,
+ "infinite":false,
+ "layers":[
+        {
+         "id":6,
+         "image":"..\/assets\/Jungle Assets\/parallax background\/plx-1.png",
+         "name":"Image Layer 5",
+         "opacity":1,
+         "tintcolor":"#64e887",
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "id":5,
+         "image":"..\/assets\/Jungle Assets\/parallax background\/plx-2.png",
+         "name":"Image Layer 4",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "id":4,
+         "image":"..\/assets\/Jungle Assets\/parallax background\/plx-3.png",
+         "name":"Image Layer 3",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "id":3,
+         "image":"..\/assets\/Jungle Assets\/parallax background\/plx-4.png",
+         "name":"Image Layer 2",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "id":2,
+         "image":"..\/assets\/Jungle Assets\/parallax background\/plx-5.png",
+         "name":"Image Layer 1",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "compression":"zlib",
+         "data":"eJztzsEJAAAIw8CK++\/sEnlYyEH+2SRb0nd+slo+J36S\/GT5yfKT5SfLT5afLD9ZfrL8ZPnJ8pM1RR12mgEf",
+         "encoding":"base64",
+         "height":30,
+         "id":1,
+         "name":"Platforms",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":42,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":7,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.10.2",
+ "tileheight":16,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"..\/assets\/Castle Assets\/castle_tileset.tsx"
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":"1.10",
+ "width":42
+}
