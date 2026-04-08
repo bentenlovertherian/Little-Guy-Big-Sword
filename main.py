@@ -11,12 +11,12 @@ SCREEN_TITLE = "Little Guy Big Sword"
 # Character sprite constants.
 CHARACTER_SCALING = 2
 PLAYER_MOVEMENT_SPEED = 3
-GRAVITY = 0.3
-PLAYER_JUMP_SPEED = 10
+GRAVITY = 0.5
+PLAYER_JUMP_SPEED = 11
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 MAX_DAMAGE_FRAMES = 7
-MAX_LIVES = 3
+MAX_LIVES = 2
 
 # How much the tiles are upscaled by.
 TILE_SCALING = 1.5
@@ -25,11 +25,11 @@ TILE_SCALING = 1.5
 ENEMY_SCALING = 1.2
 ENEMY_MOVEMENT_SPEED = 2
 ENEMY_JUMP_SPEED = 7
-ENEMY_HEALTH = 20
+ENEMY_HEALTH = 10
 RESPAWN_TIME = 300
 
 # Amount of kills needed to complete a level.
-SCORE_AMOUNT = 20
+SCORE_AMOUNT = 10
 
 # Spawn point coordinates for each map.
 MAP_ONE_SPAWN_POINTS = [171, 530, 417, 655, 718, 517.5]
@@ -39,6 +39,7 @@ MAP_THREE_SPAWN_POINTS = [474, 544, 816, 442, 313, 351]
 # Layer names.
 LAYER_NAME_PLATFORMS = "Platforms"
 LAYER_NAME_ENEMIES = "Enemies"
+LAYER_NAME_BLOOD = "Blood"
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
@@ -50,8 +51,6 @@ def load_texture_pair(filename):
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True),
     ]
-
-
 
 class Skeleton(arcade.Sprite):
     '''Class that loads enemies'''
@@ -100,24 +99,27 @@ class Skeleton(arcade.Sprite):
         self.scale = ENEMY_SCALING
         self.sprite_face_direction = RIGHT_FACING
 
+        self.attack_state = False
         self.cur_texture = 0
+        self.death_texture = 0
         self.state = "alive"
         self.timer = 0
         self.enemy_health = ENEMY_HEALTH
         self.attacking = False
         self.if_hit = False
-        self.state = "alive"
         self.death_timer = 0
         self.play_sound = 0
         self.died = False
+        self.frames = 0
+        self.blood_sprite = None
 
         # Loads sound when enemy dies.
         self.enemy_death_sound = arcade.load_sound("./assets/sounds/enemy_death.wav")
-    
+        
     def update_enemy_movement(self):
         '''When called updates the movement of the enemy sprite'''
 
-        if self.state == "alive":
+        if self.state == "alive" and self.attack_state == False:
             
             # Chooses a random number that determines the movement
             #of the sprite, either left, right, idle or jump.
@@ -134,8 +136,8 @@ class Skeleton(arcade.Sprite):
                 elif self.direction >= 9:
                     self.change_x = 0
 
-        # Movement is locked if the enemy is attacking or dead.
-        elif self.state == "attack" or self.state == "dead":
+        # Movement is locked if the enemy is attacking or dead. self.state == "attack" or 
+        else: 
             self.change_x = 0
             self.change_y = 0
 
@@ -143,7 +145,7 @@ class Skeleton(arcade.Sprite):
         '''Updates the animation of the enemy sprite'''
 
         # Code only runs if the enemy's health is above 0.
-        if self.enemy_health > 0:
+        if self.state == "alive":
 
             # Determines the facing direction depending on the movement of the sprite.
             if self.change_x < 0 and self.sprite_face_direction == RIGHT_FACING:
@@ -157,7 +159,7 @@ class Skeleton(arcade.Sprite):
                     self.if_hit = False
 
             # Runs if the enemy isn't attacking.        
-            if self.state != "attack":
+            if self.attack_state == False:
 
                 self.attacking = False
 
@@ -182,7 +184,7 @@ class Skeleton(arcade.Sprite):
                         self.texture = self.idle_textures[self.cur_texture][self.sprite_face_direction]
 
             # Only runs if the state of the enemy is "attack".
-            if self.state == "attack":
+            if self.attack_state == True:
 
                 # Runs the attacking animation that sets the attacking variable when animation runs the final frame then
                 # resets back to false.
@@ -190,81 +192,75 @@ class Skeleton(arcade.Sprite):
                     self.cur_texture += 1
                     if self.cur_texture > 7:
                         self.attacking = False
-                        self.state = ""
                         self.cur_texture = 0
                     if self.cur_texture == 7:
+                        self.attack_state = False
                         self.attacking = True  
                     self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
 
                 else:
                     self.timer += 1
-
-        # Only runs if the enemy health is below and the enemy isn't already dead.
-        if self.enemy_health <= 0 and self.state != "dead":
-                
-
-                # Once the animation has run the enemy state is dead.
-                if self.timer > 6:
-                    self.cur_texture += 1
-                    if self.cur_texture > 3:
-                        self.state = "dead"
-                        self.attacking = False
-                        self.cur_texture = 0
-                    self.texture = self.death_textures[self.cur_texture][self.sprite_face_direction]
-                    self.timer = 0
-                else:
-                    self.timer += 1
-
-                # Play sound variable is used to make sure the sound is only played once when the enemy dies.
-                self.play_sound += 1
-                if self.play_sound < 2:
-                    arcade.play_sound(self.enemy_death_sound)
-                    self.play_sound += 1 
-
-        # Only runs if enemy state is "dead".
-        if self.state == "dead":
-
-            self.texture = self.death_textures[3][self.sprite_face_direction]
-
-            # Timer so the enemy doesn't immediatley respawn when they are killed.
-            self.death_timer += 1
-            if self.death_timer > RESPAWN_TIME:
-                self.respawn()
            
     def get_attack(self):
         '''Returns attacking variable'''
         return self.attacking
     
+    def death_animation(self):
+
+        '''Improved death animation function 7/03/26'''
+        
+        if self.state == "dead":
+
+            if self.timer == 6:
+
+                self.timer = 0
+                self.death_texture += 1
+                self.texture = self.death_textures[self.death_texture][self.sprite_face_direction]
+
+                if self.death_texture >= 3:
+                    self.state = "dying"
+                    self.death_texture = 0
+            else:
+                self.timer += 1
+        
+        if self.state == "dying":
+            if self.timer > 180:      
+                self.respawn()
+                return
+            else:
+                self.timer += 1
+            
     def respawn(self):
         '''Respawns the enemy when it is killed'''
 
+
+        if self.state == "alive" or self.state == "dying":
+
         # Determines spawn location depending on the level.
-        spawn_points = 0
-        if self.level == 1:
-            spawn_points = MAP_ONE_SPAWN_POINTS
-        elif self.level == 2:
-            spawn_points = MAP_TWO_SPAWN_POINTS
-        else:
-            spawn_points = MAP_THREE_SPAWN_POINTS
+            spawn_points = 0
+            if self.level == 1:
+                spawn_points = MAP_ONE_SPAWN_POINTS
+            elif self.level == 2:
+                spawn_points = MAP_TWO_SPAWN_POINTS
+            else:
+                spawn_points = MAP_THREE_SPAWN_POINTS
 
-        # Resets enemy health and state.
-        self.enemy_health = ENEMY_HEALTH
-        self.state = "alive"
-        self.death_timer = 0
-        self.play_sound = 0
+            # Resets enemy health and state.
+            self.enemy_health = ENEMY_HEALTH
+            self.state = "alive"
 
-        # Selects from a random list of coordinates.
-        random_num = random.randint(1, 3)
-        if random_num == 1:
-            self.center_x = spawn_points[0]
-            self.center_y = spawn_points[1]
-        elif random_num == 2:
-            self.center_x = spawn_points[2]
-            self.center_y = spawn_points[3]
-        elif random_num == 3:
-            self.center_x = spawn_points[4]
-            self.center_y = spawn_points[5]
+            # Selects from a random list of coordinates.
+            random_num = random.randint(1, 3)
+            if random_num == 1:
+                self.center_x = spawn_points[0]
+                self.center_y = spawn_points[1]
+            elif random_num == 2:
+                self.center_x = spawn_points[2]
+                self.center_y = spawn_points[3]
+            elif random_num == 3:
+                self.center_x = spawn_points[4]
+                self.center_y = spawn_points[5]
     
     def get_dead(self):
         '''Returns the state of the enemy.'''
@@ -327,12 +323,9 @@ class PlayerSprite(arcade.Sprite):
         self.health = 10
         self.if_hit = False
         self.cur_texture = 0
-        self.kills = 0
 
         # Loads death sound of player.
         self.player_death_sound = arcade.load_sound("./assets/sounds/player_death.wav")
-
-
     def update_animation(self, delta_time: float = 1 / 60):
         '''Update the animation of the player sprite.'''
 
@@ -341,11 +334,6 @@ class PlayerSprite(arcade.Sprite):
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-        
-        # Calls if_killed function if healthh is below or equal to 0.
-        if self.health <= 0:
-            self.if_killed()
-            return
 
         if self.attack == False:
             
@@ -384,16 +372,17 @@ class PlayerSprite(arcade.Sprite):
                 self.change_x = 0
                 self.change_y = 0
 
-            # Loads attacking animation.
+            # Runs attacking animation.
             if self.timer > 1:
                 self.cur_texture += 1
+                self.timer = 0
                 if self.cur_texture > 3:
                     self.cur_texture = 0
+                    self.attack = False
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
-                self.timer = 0
             else:
-                self.timer += 1
-        
+                self.timer += 1 
+
     def if_killed(self):
         '''Resets player back to starting position when killed as well as plays death sound.'''
 
@@ -402,6 +391,20 @@ class PlayerSprite(arcade.Sprite):
         self.center_x = PLAYER_START_X
         self.center_y = PLAYER_START_Y
 
+class BloodSprite(arcade.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.idle_texture = arcade.load_texture("./assets/test_enemy_2.png")
+        self.texture = self.idle_texture
+        self.state = "active"
+        self.spawn_pos_x = None
+        self.spawn_pos_y = None
+        self.center_y = PLAYER_START_Y -100
+        self.center_x = PLAYER_START_X
+    def respawn(self):
+        self.center_x = PLAYER_START_X
+        self.center_y = PLAYER_START_Y - 100
+        
 class MyGame(arcade.Window):
 
     """
@@ -415,9 +418,11 @@ class MyGame(arcade.Window):
         FILE_PATH = os.path.dirname(os.path.abspath(__file__))
         os.chdir(FILE_PATH)
 
+        self.doublejump = 1
+
         self.tile_map = None
 
-        self.level = 1
+        self.level = 3
 
         self.scene = None
 
@@ -425,7 +430,34 @@ class MyGame(arcade.Window):
 
         self.player_sprite = None
 
+
         self.lives = MAX_LIVES
+
+        self.blood_sprite_1 = None
+        self.blood_sprite_2 = None
+        self.blood_sprite_3 = None
+        self.blood_sprite_4 = None
+        self.blood_sprite_5 = None
+        self.blood_sprite_6 = None
+        self.blood_sprite_7 = None
+        self.blood_sprite_8 = None
+        self.blood_sprite_9 = None
+        self.blood_sprite_10 = None
+        self.blood_sprite_11 = None
+
+        self.blood_sprites_list = [
+        self.blood_sprite_1,
+        self.blood_sprite_2,
+        self.blood_sprite_3,
+        self.blood_sprite_4,
+        self.blood_sprite_5,
+        self.blood_sprite_6,
+        self.blood_sprite_7,
+        self.blood_sprite_8,
+        self.blood_sprite_9,
+        self.blood_sprite_10,
+        self.blood_sprite_11
+        ]
 
         # All enemy sprites.
         self.enemy_sprite_1 = None
@@ -453,6 +485,8 @@ class MyGame(arcade.Window):
         # Player sprite engine.
         self.physics_engine = None
         
+        #self.blood_physics_engine = None 
+
         self.camera = None
 
         self.gui_camera = None
@@ -484,6 +518,7 @@ class MyGame(arcade.Window):
                                       ]
 
         # Sounds pre loaded.
+        self.enemy_death_sound = arcade.load_sound("./assets/sounds/enemy_death.wav")
         self.ouch = arcade.load_sound("./assets/sounds/ouch.wav")
         self.player_hit = arcade.load_sound("./assets/sounds/hit.wav")
         self.key_pickup = arcade.load_sound("./assets/sounds/key_pickup.wav")
@@ -512,8 +547,13 @@ class MyGame(arcade.Window):
         self.player_sprite.center_x = PLAYER_START_X
         self.player_sprite.center_y = PLAYER_START_Y
         self.scene.add_sprite("Player", self.player_sprite)
-        
 
+        # Loads blood sprites
+        for i in range(11) :
+            self.blood_sprites_list[i] = BloodSprite()
+            self.scene.add_sprite(LAYER_NAME_BLOOD,self.blood_sprites_list[i])
+
+        
         # Uses list of sprite objects and calls the Skeleton function and adds them to the scene.
         for self.new_enemy in self.enemy_sprite_list:
 
@@ -539,7 +579,6 @@ class MyGame(arcade.Window):
                 walls=self.scene[LAYER_NAME_PLATFORMS])
             self.enemy_physics_engines[index] = self.engine
 
-        
     def on_draw(self):
 
         self.clear()
@@ -571,6 +610,12 @@ class MyGame(arcade.Window):
                 if self.physics_engine.can_jump():
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                     arcade.play_sound(self.jump_sound)
+
+                if self.doublejump == True:
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED - 2
+                    arcade.play_sound(self.jump_sound)
+                    self.doublejump = "jumped"
+
             elif key == arcade.key.LEFT or key == arcade.key.A:
                 self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
                 arcade.play_sound(self.walk_sound)
@@ -582,40 +627,56 @@ class MyGame(arcade.Window):
             elif key == arcade.key.SPACE:
                 self.player_sprite.attack = True
       
-    
     def on_key_release(self, key, modifiers):
 
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = 0
+            if self.player_sprite.change_x != PLAYER_MOVEMENT_SPEED:
+                self.player_sprite.change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = 0
-        
-        elif key == arcade.key.SPACE:
-            self.player_sprite.attack = False
+            if self.player_sprite.change_x != -PLAYER_MOVEMENT_SPEED:
+                self.player_sprite.change_x = 0
 
     def on_update(self, delta_time: float = 1 / 60):
         '''Updates the game 60 times per second'''
+        
+
+        if self.physics_engine.can_jump():
+            self.doublejump = False
+        else:
+            if self.doublejump != "jumped":
+                self.doublejump = True
+        
+        # Blood clarts// blood splats
+        for a in self.blood_sprites_list:
+                    if a.state == "inactive":
+                        a.center_y += (int(a.spawn_pos_x)-int(a.center_x)+10)^2
+                        a.center_x += 1
+                        if a.center_y < a.spawn_pos_y - 100:
+                            a.state = "active"
+                            a.respawn()
 
         # Updates the physics engines
         self.physics_engine.update()
         for i in self.enemy_physics_engines:
             i.update()
-
+        
         self.player_sprite.update_animation()
+        if self.player_sprite.health <= 0:
+            self.lives -= 1
+            self.player_sprite.if_killed()
 
         # Updates the enemy movement and animation.
         for enemies in self.enemy_sprite_list:
             enemies.update_enemy_movement()
             enemies.update_enemy_animation()
+            enemies.death_animation()
 
-        # Updates the score once the enemy has respawned.
+        # Enemy death
         for i in self.enemy_sprite_list:
-            if i.state == "dead":
-                self.respawn_counter += 1
-                if self.respawn_counter == RESPAWN_TIME:
-                    self.kills += 1
-                    self.respawn_counter = 0
-
+            if i.enemy_health <= 0 and i.state == "alive":
+                arcade.play_sound(self.enemy_death_sound)
+                self.kills += 1
+                i.state = "dead"
 
         enemy_hit_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene[LAYER_NAME_ENEMIES]])
 
@@ -624,49 +685,49 @@ class MyGame(arcade.Window):
             
             # Changes the state of enemy to attack when it collides with the player.
             if enemy.enemy_health > 0:
-                enemy.state = "attack"
+                enemy.attack_state = True
+                enemy.sprite_face_direction = self.player_sprite.character_face_direction
 
-            # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
-            if enemy.get_attack() == True:
-                        self.player_sprite.if_hit = True
-                        self.counter += 1
-                        if self.counter > 7: #Make Constant
-                            self.player_sprite.health -= 1
-                            arcade.play_sound(self.ouch)
-                            self.counter = 0
-                        
-                        if self.player_sprite.health <= 0:
-                            self.lives -= 1
+                # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
+                if enemy.get_attack() == True:
+                            self.player_sprite.if_hit = True
+                            self.counter += 1
+                            if self.counter > 7: # Make Constant
+                                self.player_sprite.health -= 1
+                                arcade.play_sound(self.ouch)
+                                self.counter = 0
 
-            # If the player hits the enemy sprite the enemy health decreases        
-            if self.player_sprite.attack == True:
-                        
-                        enemy.if_hit = True
-                        enemy.enemy_health -= 1
-                        arcade.play_sound(self.player_hit)
+            # If the player hits the enemy sprite the enemy health decreases Dev notes: this conditional should only run for one frame        
+            if self.player_sprite.attack == True and enemy.enemy_health > 0:
 
-                        # Timer so 
-                        self.attack_counter += 1
-                        if self.attack_counter > 5:
-                            self.player_sprite.attack = False
-                            self.attack_counter = 0
+                enemy.if_hit = True
+                enemy.enemy_health -= 5
+
+                for a in self.blood_sprites_list:
+                    if a.state == "active":
+                        a.state = "inactive"
+                        a.center_x = enemy.center_x
+                        a.spawn_pos_x = enemy.center_x
+                        a.spawn_pos_y = enemy.center_y
+                        a.center_y = enemy.center_y
+                        break
+                    else:
+                        continue
+            
+                arcade.play_sound(self.player_hit)
 
         # Resets score and player health and changes map and gives player a life if they have lost one
-        if self.kills == SCORE_AMOUNT:
+        if self.kills == SCORE_AMOUNT and self.level !=3:
             arcade.play_sound(self.level_end)
             self.level += 1
             self.kills = 0
-            self.player_sprite.health = 10
+            self.setup()
 
-            # Only increases lives if lives is below three.
-            if self.lives < MAX_LIVES:
-                self.lives += 1
 
             # Plays winning sound when the player has completed level 3.
-            if self.level == 4:
-                self.level = 3
-                arcade.play_sound(self.end)
-            self.setup()
+        elif self.kills == SCORE_AMOUNT:
+            arcade.play_sound(self.end)
+            self.kills = 0
 
         # Resets player back to start.
         if self.lives == 0:
