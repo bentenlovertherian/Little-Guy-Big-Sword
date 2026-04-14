@@ -595,14 +595,14 @@ class MyGame(arcade.Window):
             self.enemy_physics_engines[index] = self.engine
 
     def on_draw(self):
-
+        '''Draws everything to the screen.'''
         self.clear()
         if not self.game_started:
             # Just draw one big image that covers the screen
             arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.menu_texture)
+            arcade.draw_text("PRESS SPACE TO ATTACK AND B TO BLAST", 520, 200, arcade.csscolor.WHITE, 20, anchor_x="center", anchor_y="center")
         else:
-            # Your actual game drawing code
-            #self.scene.draw()
+            # Actual game drawing code
             self.camera.use()
 
             self.scene.draw(pixelated = True)
