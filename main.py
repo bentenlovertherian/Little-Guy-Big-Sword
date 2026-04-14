@@ -2,7 +2,7 @@
 import arcade
 import os
 import random
-
+print(arcade.__version__)
 # Screen constants.
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -16,7 +16,7 @@ PLAYER_JUMP_SPEED = 11
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
 MAX_DAMAGE_FRAMES = 7
-MAX_LIVES = 2
+MAX_LIVES = 3
 
 # How much the tiles are upscaled by.
 TILE_SCALING = 1.5
@@ -24,15 +24,13 @@ TILE_SCALING = 1.5
 # Enemy sprite constants
 ENEMY_SCALING = 1.2
 ENEMY_MOVEMENT_SPEED = 2
-ENEMY_JUMP_SPEED = 7
-ENEMY_HEALTH = 10
-RESPAWN_TIME = 300
+ENEMY_HEALTH = 5
 
 # Amount of kills needed to complete a level.
 SCORE_AMOUNT = 10
 
 # Spawn point coordinates for each map.
-MAP_ONE_SPAWN_POINTS = [171, 530, 417, 655, 718, 517.5]
+MAP_ONE_SPAWN_POINTS = [171, 330, 617, 650, 618, 517]
 MAP_TWO_SPAWN_POINTS = [277, 558, 555, 361, 718, 517]
 MAP_THREE_SPAWN_POINTS = [474, 544, 816, 442, 313, 351]
 
@@ -43,6 +41,7 @@ LAYER_NAME_BLOOD = "Blood"
 
 RIGHT_FACING = 0
 LEFT_FACING = 1
+
 
 def load_texture_pair(filename):
     '''Loads texture and horizontally flipped texture for when sprites move in opposite direction'''
@@ -105,7 +104,7 @@ class Skeleton(arcade.Sprite):
         self.state = "alive"
         self.timer = 0
         self.enemy_health = ENEMY_HEALTH
-        self.attacking = False
+        self.enemy_hit_frame = False
         self.if_hit = False
         self.death_timer = 0
         self.play_sound = 0
@@ -122,14 +121,11 @@ class Skeleton(arcade.Sprite):
         if self.state == "alive" and self.attack_state == False:
             
             # Chooses a random number that determines the movement
-            #of the sprite, either left, right, idle or jump.
+            #of the sprite, either left, right or idle.
             i = random.randint(1, 20)
             if i == 1:
                 self.direction =  random.randint(0, 12)
-                if self.direction == 0:
-                    if self.change_y == 0:
-                        self.change_y += ENEMY_JUMP_SPEED
-                elif self.direction >= 1 and self.direction <=4:
+                if self.direction >= 1 and self.direction <=4:
                     self.change_x = ENEMY_MOVEMENT_SPEED
                 elif self.direction >= 5 and self.direction <= 8:
                     self.change_x = -ENEMY_MOVEMENT_SPEED
@@ -137,9 +133,23 @@ class Skeleton(arcade.Sprite):
                     self.change_x = 0
 
         # Movement is locked if the enemy is attacking or dead. self.state == "attack" or 
-        else: 
+        elif self.attack_state == True and self.change_y == 0: 
             self.change_x = 0
             self.change_y = 0
+
+    def track_player(self, player_x, player_y):
+        '''Update the movement of the enemy to track player when player is within
+        a certain distance.'''
+
+        if self.attack_state == False and (self.center_y - player_y) < 50 and (self.center_y - player_y) > -50:
+            if (self.center_x - player_x) > 0 and (self.center_x - player_x) < 200:
+                self.sprite_face_direction = LEFT_FACING
+                self.change_x = -ENEMY_MOVEMENT_SPEED
+            elif (self.center_x - player_x) < 0 and (self.center_x - player_x) > -200:        
+                self.sprite_face_direction = RIGHT_FACING
+                self.change_x = ENEMY_MOVEMENT_SPEED
+        else:
+            self.update_enemy_movement() # Idle movement is random movemment when player isn't within range.
 
     def update_enemy_animation(self, delta_time: float = 1 / 60):
         '''Updates the animation of the enemy sprite'''
@@ -161,7 +171,7 @@ class Skeleton(arcade.Sprite):
             # Runs if the enemy isn't attacking.        
             if self.attack_state == False:
 
-                self.attacking = False
+                self.enemy_hit_frame = False
 
                 # Runs the walking animation with a timer that slows the speed of animation.
                 if self.change_x > 0 or self.change_x < 0:
@@ -191,11 +201,11 @@ class Skeleton(arcade.Sprite):
                 if self.timer > 5:
                     self.cur_texture += 1
                     if self.cur_texture > 7:
-                        self.attacking = False
+                        self.enemy_hit_frame = False
                         self.cur_texture = 0
                     if self.cur_texture == 7:
                         self.attack_state = False
-                        self.attacking = True  
+                        self.enemy_hit_frame = True  
                     self.texture = self.attack_textures[self.cur_texture][self.sprite_face_direction]
                     self.timer = 0
 
@@ -204,7 +214,7 @@ class Skeleton(arcade.Sprite):
            
     def get_attack(self):
         '''Returns attacking variable'''
-        return self.attacking
+        return self.enemy_hit_frame
     
     def death_animation(self):
 
@@ -319,6 +329,7 @@ class PlayerSprite(arcade.Sprite):
                 x +=1
 
         self.attack = False
+        self.attacking_anim = False
         self.timer = 0
         self.health = 10
         self.if_hit = False
@@ -329,13 +340,13 @@ class PlayerSprite(arcade.Sprite):
     def update_animation(self, delta_time: float = 1 / 60):
         '''Update the animation of the player sprite.'''
 
-        # Sets face direction depending on player movement.
+        # Sets face direction based on player movement.
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
 
-        if self.attack == False:
+        if self.attacking_anim == False:
             
             # Runs falling textures when falling.
             if self.change_y < 0 and self.change_y > -1:
@@ -365,9 +376,9 @@ class PlayerSprite(arcade.Sprite):
                 self.texture = self.hit_textures[self.cur_texture][self.character_face_direction]
         
 
-        if self.attack == True:
+        elif self.attacking_anim == True:
             
-            # Makes player hover in air while attacking.
+            # Makes player hover in air while attacking.Should problably remove
             if self.change_y < 0:
                 self.change_x = 0
                 self.change_y = 0
@@ -378,6 +389,7 @@ class PlayerSprite(arcade.Sprite):
                 self.timer = 0
                 if self.cur_texture > 3:
                     self.cur_texture = 0
+                    self.attacking_anim = False
                     self.attack = False
                 self.texture = self.attack_textures[self.cur_texture][self.character_face_direction]
             else:
@@ -395,16 +407,22 @@ class BloodSprite(arcade.Sprite):
     def __init__(self):
         super().__init__()
         self.idle_texture = arcade.load_texture("./assets/test_enemy_2.png")
+        self.splat_texture = arcade.load_texture("./assets/splat-transparent.png")
         self.texture = self.idle_texture
         self.state = "active"
         self.spawn_pos_x = None
         self.spawn_pos_y = None
         self.center_y = PLAYER_START_Y -100
         self.center_x = PLAYER_START_X
-    def respawn(self):
-        self.center_x = PLAYER_START_X
-        self.center_y = PLAYER_START_Y - 100
-        
+        self.direction = 1
+
+    def update_blood_movement(self):
+        '''Updates the movement of the blood sprites'''
+
+        if self.state == "inactive":
+            self.center_x += 1 * self.direction
+            self.center_y += 8 - 0.1*(self.center_x - self.spawn_pos_x)**2
+
 class MyGame(arcade.Window):
 
     """
@@ -419,17 +437,13 @@ class MyGame(arcade.Window):
         os.chdir(FILE_PATH)
 
         self.doublejump = 1
-
         self.tile_map = None
-
-        self.level = 3
-
+        self.level = 1
         self.scene = None
-
         self.spawn_points = None
-
         self.player_sprite = None
-
+        self.game_started = False
+        self.blast = False
 
         self.lives = MAX_LIVES
 
@@ -485,11 +499,11 @@ class MyGame(arcade.Window):
         # Player sprite engine.
         self.physics_engine = None
         
-        #self.blood_physics_engine = None 
-
         self.camera = None
 
         self.gui_camera = None
+
+        self.menu_texture = arcade.load_texture("./assets/displays/intro_transparent.png")
 
         # Score of how many enemies are killed per level.
         self.kills = 0
@@ -526,6 +540,7 @@ class MyGame(arcade.Window):
         self.jump_sound = arcade.load_sound("./assets/sounds/jump.wav")
         self.level_end = arcade.load_sound("./assets/sounds/complete_level.wav")
         self.end = arcade.load_sound("./assets/sounds/end.wav")
+        self.bang = arcade.load_sound("./assets/sounds/bang.wav")
 
     def setup(self):
         '''Initializes all sprites and maps'''
@@ -582,27 +597,44 @@ class MyGame(arcade.Window):
     def on_draw(self):
 
         self.clear()
+        if not self.game_started:
+            # Just draw one big image that covers the screen
+            arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.menu_texture)
+        else:
+            # Your actual game drawing code
+            #self.scene.draw()
+            self.camera.use()
 
-        self.camera.use()
+            self.scene.draw(pixelated = True)
 
-        self.scene.draw(pixelated = True)
+            self.gui_camera.use()
 
-        self.gui_camera.use()
+            # Displays when player wins game
+            if self.level == 3 and self.kills >= 67:
+                arcade.draw_text("YOU WIN!", 550, 580, arcade.csscolor.WHITE, 50, anchor_x="center", anchor_y="center")
+            # Shoddy programming
+            if self.level > 1 and self.player_sprite.center_x < 100 and self.kills == 0:
+                arcade.draw_text("LEVEL COMPLETED!", 550, 680, arcade.csscolor.WHITE, 50, anchor_x="center", anchor_y="center")
 
-        # Displays health.
-        draw_health = f"HEALTH: {self.player_sprite.health}"
-        arcade.draw_text(draw_health, 40, 700, arcade.csscolor.WHITE, 18)
+            # Displays level number.
+            arcade.draw_text(f"LEVEL {self.level}", 40, 550, arcade.csscolor.WHITE, 18)
 
-        # Displays Score/amount kills per level
-        draw_kills = f"SCORE: {self.kills}"
-        arcade.draw_text(draw_kills, 40, 650, arcade.csscolor.WHITE, 18)
-        
-        # Displays lives.
-        draw_lives = f"LIVES: {self.lives}"
-        arcade.draw_text(draw_lives, 40, 600, arcade.csscolor.WHITE, 18)
+            # Displays health.
+            draw_health = f"HEALTH: {self.player_sprite.health}"
+            arcade.draw_text(draw_health, 40, 700, arcade.csscolor.WHITE, 18)
+
+            # Displays Score/amount kills per level
+            draw_kills = f"SCORE: {self.kills}/{SCORE_AMOUNT}"
+            arcade.draw_text(draw_kills, 40, 650, arcade.csscolor.WHITE, 18)
+            
+            # Displays lives.
+            draw_lives = f"LIVES: {self.lives}"
+            arcade.draw_text(draw_lives, 40, 600, arcade.csscolor.WHITE, 18)
 
     def on_key_press(self, key, modifiers):
         
+        if key==arcade.key.ENTER and self.game_started == False:
+            self.game_started = True
         #Only runs if player is alive.
         if self.player_sprite.health > 0:
 
@@ -622,12 +654,19 @@ class MyGame(arcade.Window):
             elif key == arcade.key.RIGHT or key == arcade.key.D:
                 self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
                 arcade.play_sound(self.walk_sound)
+            
+            elif key == arcade.key.B:
+                self.blast = True
+                arcade.play_sound(self.bang)
 
             # Sets player attack variable to true when spaced is pressed.
             elif key == arcade.key.SPACE:
                 self.player_sprite.attack = True
+                self.player_sprite.attacking_anim = True
+                self.player_sprite.cur_texture = 0
       
     def on_key_release(self, key, modifiers):
+
 
         if key == arcade.key.LEFT or key == arcade.key.A:
             if self.player_sprite.change_x != PLAYER_MOVEMENT_SPEED:
@@ -635,102 +674,120 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             if self.player_sprite.change_x != -PLAYER_MOVEMENT_SPEED:
                 self.player_sprite.change_x = 0
+        elif key == arcade.key.B:
+            self.blast = False
 
     def on_update(self, delta_time: float = 1 / 60):
         '''Updates the game 60 times per second'''
-        
-
+        # Handles double jump mechanic
         if self.physics_engine.can_jump():
             self.doublejump = False
         else:
             if self.doublejump != "jumped":
                 self.doublejump = True
         
-        # Blood clarts// blood splats
-        for a in self.blood_sprites_list:
-                    if a.state == "inactive":
-                        a.center_y += (int(a.spawn_pos_x)-int(a.center_x)+10)^2
-                        a.center_x += 1
-                        if a.center_y < a.spawn_pos_y - 100:
-                            a.state = "active"
-                            a.respawn()
+        # Updates the movement of blood sprites
+        for blood in self.scene[LAYER_NAME_BLOOD]:
 
-        # Updates the physics engines
+            blood.update_blood_movement()
+
+            # Check if this specific blood sprite hits any platform
+            hit_list = arcade.check_for_collision_with_list(blood, self.scene[LAYER_NAME_PLATFORMS])
+
+            # When blood_sprite collides with platform it's movement is locked and appended
+            # to the end of the blood sprite list so it can be used again when the player hits an enemy.
+            if len(hit_list) > 0 and blood.state == "inactive":
+                self.blood_sprites_list.pop(self.blood_sprites_list.index(blood))
+                self.blood_sprites_list.append(blood)
+                blood.state = "active"
+                blood.texture = blood.splat_texture
+                blood.change_y = 0
+                blood.change_x = 0
+
+        # Updates the physics of player and enemy sprites.
         self.physics_engine.update()
         for i in self.enemy_physics_engines:
             i.update()
         
+        
         self.player_sprite.update_animation()
+
+        # Handles if player is killed
         if self.player_sprite.health <= 0:
             self.lives -= 1
             self.player_sprite.if_killed()
 
-        # Updates the enemy movement and animation.
+        # Updates enemy properties
         for enemies in self.enemy_sprite_list:
-            enemies.update_enemy_movement()
+            # Handles enemy movement, animation and death animation
+            enemies.track_player(self.player_sprite.center_x, self.player_sprite.center_y)
             enemies.update_enemy_animation()
             enemies.death_animation()
-
-        # Enemy death
-        for i in self.enemy_sprite_list:
-            if i.enemy_health <= 0 and i.state == "alive":
+            # Handles enemy death, adds score plays sound and updates enemy state
+            if enemies.enemy_health <= 0 and enemies.state == "alive":
                 arcade.play_sound(self.enemy_death_sound)
                 self.kills += 1
-                i.state = "dead"
+                enemies.state = "dead"
 
+        # Handles player-enemy collision
         enemy_hit_list = arcade.check_for_collision_with_lists(self.player_sprite,[self.scene[LAYER_NAME_ENEMIES]])
-
-         # If player collides with enemy sprite.
         for enemy in enemy_hit_list:
-            
-            # Changes the state of enemy to attack when it collides with the player.
-            if enemy.enemy_health > 0:
-                enemy.attack_state = True
-                enemy.sprite_face_direction = self.player_sprite.character_face_direction
 
-                # If the enemy manages to hit the player the player health decreases and sets the if_hit variable to True.
-                if enemy.get_attack() == True:
-                            self.player_sprite.if_hit = True
-                            self.counter += 1
-                            if self.counter > 7: # Make Constant
-                                self.player_sprite.health -= 1
-                                arcade.play_sound(self.ouch)
-                                self.counter = 0
+            if enemy.enemy_health > 0: 
 
-            # If the player hits the enemy sprite the enemy health decreases Dev notes: this conditional should only run for one frame        
-            if self.player_sprite.attack == True and enemy.enemy_health > 0:
+                enemy.attack_state = True # Enemy starts attacking on player collision
+                #enemy.sprite_face_direction = self.player_sprite.character_face_direction
 
-                enemy.if_hit = True
-                enemy.enemy_health -= 5
+                # If the enemy manages to hit the player the player loses health
+                if enemy.get_attack():
+                    self.player_sprite.if_hit = True
+                    self.player_sprite.health -= 1
+                    enemy.enemy_hit_frame = False
+                    arcade.play_sound(self.ouch)
 
-                for a in self.blood_sprites_list:
-                    if a.state == "active":
-                        a.state = "inactive"
-                        a.center_x = enemy.center_x
-                        a.spawn_pos_x = enemy.center_x
-                        a.spawn_pos_y = enemy.center_y
-                        a.center_y = enemy.center_y
-                        break
+                # If the player hits the enemy sprite the enemy health decreases Dev notes: this conditional should only run for one frame        
+                if self.player_sprite.attack == True:
+
+                    enemy.if_hit = True
+                    enemy.enemy_health -= 1
+                    arcade.play_sound(self.player_hit)
+                    self.player_sprite.attack = False
+
+                    # Spawns blood sprite when player hits enemy
+                    for a in self.blood_sprites_list:
+                        if a.state == "active":
+                            # Sets blood sprite position to enemy position and sets a random movement direction
+                            a.texture = a.idle_texture
+                            a.direction = random.choice([-1, 1])
+                            a.state = "inactive"
+                            a.center_x = enemy.center_x
+                            a.spawn_pos_x = enemy.center_x
+                            a.spawn_pos_y = enemy.center_y
+                            a.center_y = enemy.center_y
+                            break
                     else:
                         continue
-            
-                arcade.play_sound(self.player_hit)
+                
+                # Send enemy in a random direction if player uses blast attack on them.
+                if self.blast == True:
+                    enemy.if_hit = True
+                    enemy.change_y = 10
+                    enemy.change_x = random.choice([-1, 1]) * 10
 
-        # Resets score and player health and changes map and gives player a life if they have lost one
+        # Resets score and player health and changes map
         if self.kills == SCORE_AMOUNT and self.level !=3:
             arcade.play_sound(self.level_end)
             self.level += 1
             self.kills = 0
             self.setup()
-
-
-            # Plays winning sound when the player has completed level 3.
-        elif self.kills == SCORE_AMOUNT:
+        # Ends game when player completed level 3
+        elif self.kills == SCORE_AMOUNT and self.level == 3:
             arcade.play_sound(self.end)
-            self.kills = 0
+            self.kills = 67
 
         # Resets player back to start.
         if self.lives == 0:
+            self.game_started = False
             self.kills = 0
             self.level = 1
             self.setup()
@@ -742,7 +799,6 @@ def main():
     Window = MyGame()
     Window.setup()
     arcade.run()
-
 
 if __name__ == "__main__":
     main()
