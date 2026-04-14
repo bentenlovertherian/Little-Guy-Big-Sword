@@ -15,7 +15,6 @@ GRAVITY = 0.5
 PLAYER_JUMP_SPEED = 11
 PLAYER_START_X = 64
 PLAYER_START_Y = 100
-MAX_DAMAGE_FRAMES = 7
 MAX_LIVES = 3
 
 # How much the tiles are upscaled by.
