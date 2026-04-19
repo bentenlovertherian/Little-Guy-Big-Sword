@@ -3,6 +3,7 @@ import arcade
 import os
 import random
 print(arcade.__version__)
+
 # Screen constants.
 SCREEN_WIDTH = 1009
 SCREEN_HEIGHT = 720
@@ -14,7 +15,7 @@ PLAYER_MOVEMENT_SPEED = 3
 GRAVITY = 0.5
 PLAYER_JUMP_SPEED = 11
 PLAYER_START_X = 64
-PLAYER_START_Y = 100
+PLAYER_START_Y = 250
 MAX_LIVES = 3
 
 # How much the tiles are upscaled by.
@@ -25,11 +26,10 @@ ENEMY_SCALING = 1.2
 ENEMY_MOVEMENT_SPEED = 2
 ENEMY_HEALTH = 5
 
-# Amount of kills needed to complete a level.
 SCORE_AMOUNT = 10
 
 # Spawn point coordinates for each map.
-MAP_ONE_SPAWN_POINTS = [171, 330, 617, 650, 618, 517]
+MAP_ONE_SPAWN_POINTS = [171, 100, 617, 650, 618, 517]
 MAP_TWO_SPAWN_POINTS = [277, 558, 555, 361, 718, 517]
 MAP_THREE_SPAWN_POINTS = [474, 544, 816, 442, 313, 351]
 
@@ -233,6 +233,7 @@ class Skeleton(arcade.Sprite):
             else:
                 self.timer += 1
         
+        # Respawns enemy after three seconds of being the dying state
         if self.state == "dying":
             if self.timer > 180:      
                 self.respawn()
@@ -285,7 +286,7 @@ class PlayerSprite(arcade.Sprite):
         self.character_face_direction = RIGHT_FACING
         self.scale = CHARACTER_SCALING
 
-        self.path = "./assets/little_guy_big-sword"
+        self.path = "./assets/character/little_guy_big-sword"
 
         # Sets idle texture as well as hitbox of player sprite.
         self.idle_texture = f"{self.path}_0.png"
@@ -405,13 +406,13 @@ class PlayerSprite(arcade.Sprite):
 class BloodSprite(arcade.Sprite):
     def __init__(self):
         super().__init__()
-        self.idle_texture = arcade.load_texture("./assets/test_enemy_2.png")
-        self.splat_texture = arcade.load_texture("./assets/splat-transparent.png")
+        self.idle_texture = arcade.load_texture("./assets/blood/test_enemy_2.png")
+        self.splat_texture = arcade.load_texture("./assets/blood/splat-transparent.png")
         self.texture = self.idle_texture
         self.state = "active"
         self.spawn_pos_x = None
         self.spawn_pos_y = None
-        self.center_y = PLAYER_START_Y -100
+        self.center_y = PLAYER_START_Y -300
         self.center_x = PLAYER_START_X
         self.direction = 1
 
@@ -548,7 +549,7 @@ class MyGame(arcade.Window):
 
         self.gui_camera = arcade.Camera(self.width, self.height)
 
-        map_name = f"./maps/map{self.level}.json"
+        map_name = f"./assets/maps/map{self.level}-test.tmj"
 
         layer_options = {LAYER_NAME_PLATFORMS: {"use_spatial_hash": True,},}
 
