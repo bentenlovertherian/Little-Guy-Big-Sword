@@ -183,11 +183,11 @@
         }, 
         {
          "firstgid":1233,
-         "source":"..\/..\/..\/91906-JamieDoig-cold\/assets\/maps\/Castle Assets\/castle_tileset.tsx"
+         "source":"Castle Assets\/castle_tileset.tsx"
         }, 
         {
          "firstgid":1361,
-         "source":"..\/..\/..\/91906-JamieDoig-cold\/assets\/maps\/Jungle Assets\/jungle_tileset.tsx"
+         "source":"Jungle Assets\/jungle_tileset.tsx"
         }],
  "tilewidth":16,
  "type":"map",

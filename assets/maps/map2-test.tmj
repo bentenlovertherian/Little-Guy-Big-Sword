@@ -138,7 +138,7 @@
         }, 
         {
          "firstgid":129,
-         "source":"..\/..\/..\/91906-JamieDoig-cold\/assets\/maps\/Castle Assets\/castle_tileset.tsx"
+         "source":"Castle Assets\/castle_tileset.tsx"
         }],
  "tilewidth":16,
  "type":"map",
