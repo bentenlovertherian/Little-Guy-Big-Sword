@@ -1,4 +1,4 @@
-# 91906-JamieDoig
+# Little-Guy-Big-Sword
 Controls:
 Arrow Keys for UP, DOWN, LEFT, RIGHT
 SPACE for attack
