@@ -1,5 +1,10 @@
 # 91906-JamieDoig
-This game began as an assignment for my programming and digital technologies class in highschool. 
-I began working on it during my free time at university, adding new features and mostly fixing my
-shoddy code.
+Controls:
+Arrow Keys for UP, DOWN, LEFT, RIGHT
+SPACE for attack
+B for blast
+ENTER to start game
+
+This game uses Python Arcade 2.6.17
+Executable is located in dist/main folder
 Little Guy Big Sword 2 coming out this summer!!!
